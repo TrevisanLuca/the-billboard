@@ -1,4 +1,5 @@
 ﻿using Npgsql;
+using System.Data;
 using TheBillboard.Abstract;
 using TheBillboard.Models;
 
@@ -26,7 +27,7 @@ public class MessageGateway : IMessageGateway
     {
         const string query = @"select * from ""Message"" join ""Author"" A on A.""Id"" = ""Message"".""AuthorId""";
 
-        Message Map(NpgsqlDataReader dr)
+        Message Map(IDataReader dr)
         {
             return new Message
             {

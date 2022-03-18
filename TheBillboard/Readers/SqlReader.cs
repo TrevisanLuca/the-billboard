@@ -1,18 +1,16 @@
 ﻿using System.Data;
-using Microsoft.AspNetCore.Identity;
+using System.Data.SqlClient;
 using Microsoft.Extensions.Options;
-using Npgsql;
 using TheBillboard.Abstract;
-using TheBillboard.Models;
 using TheBillboard.Options;
 
 namespace TheBillboard.Readers;
 
-public class PostgresReader : IReader
+public class SqlReader : IReader
 {
     private readonly string _connectionString;
 
-    public PostgresReader(IOptions<ConnectionStringOptions> options)
+    public SqlReader(IOptions<ConnectionStringOptions> options)
     {
         _connectionString = options.Value.DefaultDatabase;
     }
@@ -21,9 +19,9 @@ public class PostgresReader : IReader
     {
         var messages = new HashSet<TEntity>(); 
         
-        await using var connection = new NpgsqlConnection(_connectionString);
+        await using var connection = new SqlConnection(_connectionString);
 
-        await using var command = new NpgsqlCommand(query, connection);
+        await using var command = new SqlCommand(query, connection);
 
         await connection.OpenAsync();
         await using var dr = command.ExecuteReader();
