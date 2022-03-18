@@ -1,5 +1,7 @@
 ﻿using Microsoft.Extensions.Options;
 using Npgsql;
+using System.Data;
+using System.Data.Common;
 using System.Data.SqlClient;
 using TheBillboard.Options;
 
@@ -14,16 +16,20 @@ public class SqlWriter : IWriter
         _connectionString = options.Value.DefaultDatabase;
     }
 
-    public async Task<bool> WriteAsync<TEntity>(string query, TEntity entity)
+    public void MapParamToCommand(DbParameterCollection parameters, string name, object? value)
     {
-        query = @"INSERT INTO public.""Message""(""Title"", ""Body"", ""CreatedAt"", ""UpdatedAt"", ""AuthorId"") VALUES (@Title, @Body, '2022-03-17 00:00:00.000000', '2022-03-17 00:00:00.000000', 4)";
-        
+        parameters.Add(new SqlParameter("@" + name, value));
+    }
+
+    public async Task<bool> WriteAsync(string query, Action<DbParameterCollection> entityToQueryMapping)
+    {
         await using var connection = new SqlConnection(_connectionString);
         await using var command = new SqlCommand(query, connection);
         
+        entityToQueryMapping(command.Parameters);
+
         await connection.OpenAsync();
-                                                  
-        await command.PrepareAsync();             
+
         await command.ExecuteNonQueryAsync();
 
         return true;
