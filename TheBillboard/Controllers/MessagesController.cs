@@ -18,10 +18,10 @@ public class MessagesController : Controller
         _authorGateway = authorGateway;
     }
 
-    public async Task<IActionResult> Index()
+    public IActionResult Index()
     {
-        var messages = await _messageGateway.GetAll();
-        var authors = await _authorGateway.GetAll();
+        var messages = _messageGateway.GetAll();
+        var authors = _authorGateway.GetAll();
 
         var createViewModel = new MessageCreationViewModel(new Message(), authors);
         var indexModel = new MessagesIndexViewModel(createViewModel, messages);
@@ -39,7 +39,7 @@ public class MessagesController : Controller
         }
         else
         {
-            var viewModel = new MessageCreationViewModel(message, await _authorGateway.GetAll());
+            var viewModel = new MessageCreationViewModel(message, _authorGateway.GetAll());
             return View(viewModel);
         }
     }
@@ -49,7 +49,7 @@ public class MessagesController : Controller
     {
         if (!ModelState.IsValid)
         {
-            return View(new MessageCreationViewModel(message, await _authorGateway.GetAll()));
+            return View(new MessageCreationViewModel(message, _authorGateway.GetAll()));
         }
 
         if (message.Id == default)

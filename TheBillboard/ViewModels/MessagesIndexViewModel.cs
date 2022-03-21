@@ -2,5 +2,5 @@
 
 namespace TheBillboard.ViewModels
 {
-    public record MessagesIndexViewModel(MessageCreationViewModel MessageCreationViewModel, IEnumerable<Message> Messages);
+    public record MessagesIndexViewModel(MessageCreationViewModel MessageCreationViewModel, IAsyncEnumerable<Message> Messages);
 }

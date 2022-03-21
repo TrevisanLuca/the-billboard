@@ -4,7 +4,7 @@ namespace TheBillboard.Abstract
 {
     public interface IAuthorGateway
     {
-        public Task<IEnumerable<Author>> GetAll();
+        public IAsyncEnumerable<Author> GetAll();
 
         Task<Author?> GetById(int id);
 

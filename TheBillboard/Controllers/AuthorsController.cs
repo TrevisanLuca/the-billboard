@@ -13,9 +13,10 @@ namespace TheBillboard.Controllers
             _authorGateway = authorGateway;
         }
 
-        public async Task<IActionResult> IndexAsync()
+        public IActionResult IndexAsync()
         {
-            return View(await _authorGateway.GetAll());
+            var authors = _authorGateway.GetAll();
+            return View(authors);
         }
 
         [HttpPost]
@@ -27,6 +28,8 @@ namespace TheBillboard.Controllers
             }
 
             await _authorGateway.Create(author);
+
+            //TODO: Error handling (if author creation failed on the database)
 
             return RedirectToAction("Index");
         }

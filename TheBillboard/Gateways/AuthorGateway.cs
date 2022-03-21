@@ -15,22 +15,27 @@ public class AuthorGateway : IAuthorGateway
         _writer = writer;
     }
 
-    private Author MapAuthor(IDataReader dr)
+    public IAsyncEnumerable<Author> GetAll()
     {
-        return new Author
-        {
-            Id = dr["Id"] as int?,
-            Name = dr["Name"].ToString()!,
-            Surname = dr["Surname"].ToString()!,
-            Email = dr["Mail"].ToString(),
-            CreatedAt = dr["createdAt"] as DateTime?            
-        };
+        const string query = @"SELECT Id, Name, Surname, Mail, CreatedAt
+                               FROM Author";
+
+        return _reader.QueryAsync(query, MapAuthor);
+    }
+
+    public Task<Author?> GetById(int id)
+    {
+        var query = $@"SELECT Id, Name, Surname, Mail, CreatedAt
+                       FROM Author
+                       WHERE Id={id}";
+
+        return _reader.SingleQueryAsync(query, MapAuthor);
     }
 
     public Task<bool> Create(Author author)
     {
-        var query = @"INSERT INTO ""Author""(""Name"", ""Surname"", ""Mail"", ""CreatedAt"")
-                        VALUES (@Name, @Surname, @Email, @CreatedAt)";
+        var query = @"INSERT INTO Author(Name, Surname, Mail, CreatedAt)
+                      VALUES (@Name, @Surname, @Email, @CreatedAt)";
 
         var parameters = new List<(string, object?)>
         {
@@ -45,22 +50,21 @@ public class AuthorGateway : IAuthorGateway
 
     public Task<bool> Delete(int id)
     {
-        var query = @"DELETE FROM ""Author"" WHERE (Id=@Id)";
+        var query = @"DELETE FROM ""Author""
+                      WHERE (Id=@Id)";
+
         return _writer.WriteAsync(query, new[] { ("@Id", (object?)id) });
     }
 
-    public Task<IEnumerable<Author>> GetAll()
+    private Author MapAuthor(IDataReader dr)
     {
-        const string query = @"select * from ""Author""";
-
-        return _reader.QueryAsync(query, MapAuthor);
-    }
-
-    public Task<Author?> GetById(int id)
-    {
-        var query = $@"select * 
-                    from ""Author""
-                    where ""Id""={id}";
-        return _reader.SingleQueryAsync(query, MapAuthor);
+        return new Author
+        {
+            Id = dr["Id"] as int?,
+            Name = dr["Name"].ToString()!,
+            Surname = dr["Surname"].ToString()!,
+            Email = dr["Mail"].ToString(),
+            CreatedAt = dr["createdAt"] as DateTime?            
+        };
     }
 }

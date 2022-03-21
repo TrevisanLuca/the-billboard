@@ -17,10 +17,8 @@ public class PostgresReader : IReader
         _connectionString = options.Value.DefaultDatabase;
     }
 
-    public async Task<IEnumerable<TEntity>> QueryAsync<TEntity>(string query, Func<IDataReader, TEntity> selector)
+    public async IAsyncEnumerable<TEntity> QueryAsync<TEntity>(string query, Func<IDataReader, TEntity> selector)
     {
-        var entities = new HashSet<TEntity>(); 
-        
         await using var connection = new NpgsqlConnection(_connectionString);
 
         await using var command = new NpgsqlCommand(query, connection);
@@ -29,14 +27,11 @@ public class PostgresReader : IReader
         await using var dr = command.ExecuteReader();
         while (await dr.ReadAsync())
         {
-            var entity = selector(dr);
-            entities.Add(entity);
+            yield return selector(dr);
         }
 
         await connection.CloseAsync();
         await connection.DisposeAsync();
-        
-        return entities;
     }
 
     public async Task<TEntity?> SingleQueryAsync<TEntity>(string query, Func<IDataReader, TEntity> selector)

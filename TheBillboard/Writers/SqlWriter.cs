@@ -1,7 +1,4 @@
 ﻿using Microsoft.Extensions.Options;
-using Npgsql;
-using System.Data;
-using System.Data.Common;
 using System.Data.SqlClient;
 using TheBillboard.Abstract;
 using TheBillboard.Options;

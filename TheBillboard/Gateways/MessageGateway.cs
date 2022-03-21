@@ -15,44 +15,31 @@ public class MessageGateway : IMessageGateway
         _writer = writer;
     }
 
-    private Message MapMessage(IDataReader dr)
+    public IAsyncEnumerable<Message> GetAll()
     {
-        return new Message
-        {
-            Id = dr["id"] as int?,
-            Body = dr["body"].ToString()!,
-            Title = dr["title"].ToString()!,
-            CreatedAt = dr["createdAt"] as DateTime?,
-            UpdatedAt = dr["updatedAt"] as DateTime?,
-            AuthorId = (int)dr["authorId"],
-            Author = new Author
-            {
-                Id = dr["authorId"] as int?,
-                Name = dr["name"].ToString()!,
-                Surname = dr["surname"].ToString()!,
-            }
-        };
-    }
-
-    public Task<IEnumerable<Message>> GetAll()
-    {
-        const string query = @"select * from ""Message"" join ""Author"" A on A.""Id"" = ""Message"".""AuthorId""";
+        const string query = @"SELECT M.Id, M.Title, M.Body, M.CreatedAt, M.AuthorId, M.UpdatedAt,
+                               A.Id, A.Name, A.Surname, A.Mail, A.CreatedAt
+                               FROM Message M JOIN Author A
+                               ON A.Id = M.AuthorId";
 
         return _reader.QueryAsync(query, MapMessage);
     }
 
     public Task<Message?> GetById(int id)
     {
-        var query = $@"select * 
-                    from ""Message"" join ""Author"" A on A.""Id"" = ""Message"".""AuthorId""
-                    where ""Message"".""Id""={id}";
+        var query = $@"SELECT M.Id, M.Title, M.Body, M.CreatedAt, M.AuthorId, M.UpdatedAt,
+                       A.Id, A.Name, A.Surname, A.Mail, A.CreatedAt
+                       FROM Message M JOIN Author A
+                       ON A.Id = M.AuthorId
+                       WHERE M.Id={id}";
+
         return _reader.SingleQueryAsync(query, MapMessage);
     }
 
     public Task<bool> Create(Message message)
     {
-        var query = @"INSERT INTO ""Message""(""Title"", ""Body"", ""CreatedAt"", ""AuthorId"")
-                        VALUES (@Title, @Body, @CreatedAt, @AuthorId)";
+        var query = @"INSERT INTO Message(Title, Body, CreatedAt, AuthorId)
+                      VALUES (@Title, @Body, @CreatedAt, @AuthorId)";
 
         var parameters = new List<(string, object?)>
         {
@@ -65,15 +52,9 @@ public class MessageGateway : IMessageGateway
         return _writer.WriteAsync(query, parameters);
     }
 
-    public Task<bool> Delete(int id)
-    {
-        var query = @"DELETE FROM ""Message"" WHERE (Id=@Id)";
-        return _writer.WriteAsync(query, new[] { ("@Id", (object?)id) });
-    }
-
     public Task<bool> Update(Message message)
     {
-        var query = @"UPDATE ""Message""
+        var query = @"UPDATE Message
                       SET Title=@Title,Body=@Body,UpdatedAt=@UpdatedAt,AuthorId=@AuthorId
                       WHERE (Id=@Id)";
 
@@ -85,6 +66,31 @@ public class MessageGateway : IMessageGateway
             ("@AuthorId", message.AuthorId),
             ("@Id",message.Id)
         };
+
         return _writer.WriteAsync(query, parameters);
     }
+
+    public Task<bool> Delete(int id)
+    {
+        var query = @"DELETE FROM Message
+                      WHERE (Id=@Id)";
+
+        return _writer.WriteAsync(query, new[] { ("@Id", (object?)id) });
+    }
+
+    private Message MapMessage(IDataReader dr) => new Message
+    {
+        Id = dr["id"] as int?,
+        Body = dr["body"].ToString()!,
+        Title = dr["title"].ToString()!,
+        CreatedAt = dr["createdAt"] as DateTime?,
+        UpdatedAt = dr["updatedAt"] as DateTime?,
+        AuthorId = (int)dr["authorId"],
+        Author = new Author
+        {
+            Id = dr["authorId"] as int?,
+            Name = dr["name"].ToString()!,
+            Surname = dr["surname"].ToString()!,
+        }
+    };
 }
