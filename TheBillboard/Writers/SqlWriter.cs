@@ -3,6 +3,7 @@ using Npgsql;
 using System.Data;
 using System.Data.Common;
 using System.Data.SqlClient;
+using TheBillboard.Abstract;
 using TheBillboard.Options;
 
 namespace TheBillboard.Writers;
@@ -16,21 +17,21 @@ public class SqlWriter : IWriter
         _connectionString = options.Value.DefaultDatabase;
     }
 
-    public void MapParamToCommand(DbParameterCollection parameters, string name, object? value)
-    {
-        parameters.Add(new SqlParameter("@" + name, value));
-    }
-
-    public async Task<bool> WriteAsync(string query, Action<DbParameterCollection> entityToQueryMapping)
+    public async Task<bool> WriteAsync(string query, IEnumerable<(string, object?)> parameters)
     {
         await using var connection = new SqlConnection(_connectionString);
         await using var command = new SqlCommand(query, connection);
-        
-        entityToQueryMapping(command.Parameters);
+
+        foreach (var p in parameters)
+        {
+            command.Parameters.Add(new SqlParameter(p.Item1, p.Item2));
+        }
 
         await connection.OpenAsync();
-
         await command.ExecuteNonQueryAsync();
+
+        await connection.CloseAsync();
+        await connection.DisposeAsync();
 
         return true;
     }

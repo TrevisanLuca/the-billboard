@@ -21,12 +21,10 @@ public class MessagesController : Controller
     public async Task<IActionResult> Index()
     {
         var messages = await _messageGateway.GetAll();
-        var authors = _authorGateway.GetAll();
-
-        var messagesWithAuthor = messages.Select(message => MatchAuthorToMessage(message, authors));
+        var authors = await _authorGateway.GetAll();
 
         var createViewModel = new MessageCreationViewModel(new Message(), authors);
-        var indexModel = new MessagesIndexViewModel(createViewModel, messagesWithAuthor);
+        var indexModel = new MessagesIndexViewModel(createViewModel, messages);
         return View(indexModel);
     }
 
@@ -41,7 +39,7 @@ public class MessagesController : Controller
         }
         else
         {
-            var viewModel = new MessageCreationViewModel(message, _authorGateway.GetAll());
+            var viewModel = new MessageCreationViewModel(message, await _authorGateway.GetAll());
             return View(viewModel);
         }
     }
@@ -51,7 +49,7 @@ public class MessagesController : Controller
     {
         if (!ModelState.IsValid)
         {
-            return View(new MessageCreationViewModel(message, _authorGateway.GetAll()));
+            return View(new MessageCreationViewModel(message, await _authorGateway.GetAll()));
         }
 
         if (message.Id == default)
@@ -75,9 +73,7 @@ public class MessagesController : Controller
             return View("Error");
         }
 
-        var authors = _authorGateway.GetAll();
-        var messageWithAuthor = MatchAuthorToMessage(message, authors);
-        return View(messageWithAuthor);
+        return View(message);
     }
 
     public async Task<IActionResult> DeleteAsync(int id)
@@ -85,7 +81,4 @@ public class MessagesController : Controller
         _ = await _messageGateway.Delete(id);
         return RedirectToAction("Index");
     }
-
-    private MessageWithAuthor MatchAuthorToMessage(Message message, IEnumerable<Author> authors)
-        => new MessageWithAuthor(message, authors.FirstOrDefault(a => a.Id == message.AuthorId, new Author("Unknown Author")));
 }

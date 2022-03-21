@@ -28,6 +28,9 @@ public class PostgresWriter// : IWriter
         await command.PrepareAsync();             
         await command.ExecuteNonQueryAsync();
 
+        await connection.CloseAsync();
+        await connection.DisposeAsync();
+
         return true;
     }
 }

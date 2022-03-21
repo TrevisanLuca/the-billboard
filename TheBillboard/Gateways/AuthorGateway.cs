@@ -1,44 +1,66 @@
-﻿using TheBillboard.Abstract;
+﻿using System.Data;
+using TheBillboard.Abstract;
 using TheBillboard.Models;
 
-namespace TheBillboard.Gateways
+namespace TheBillboard.Gateways;
+
+public class AuthorGateway : IAuthorGateway
 {
-    public class AuthorGateway : IAuthorGateway
+    private readonly IReader _reader;
+    private readonly IWriter _writer;
+
+    public AuthorGateway(IReader reader, IWriter writer)
     {
-        private List<Author> _authors = new List<Author>()
+        _reader = reader;
+        _writer = writer;
+    }
+
+    private Author MapAuthor(IDataReader dr)
+    {
+        return new Author
         {
-            new Author("Alberto", "", 1),
-            new Author("Marco", "Pacchialat", 2),
+            Id = dr["Id"] as int?,
+            Name = dr["Name"].ToString()!,
+            Surname = dr["Surname"].ToString()!,
+            Email = dr["Mail"].ToString(),
+            CreatedAt = dr["createdAt"] as DateTime?            
+        };
+    }
+
+    public Task<bool> Create(Author author)
+    {
+        var query = @"INSERT INTO ""Author""(""Name"", ""Surname"", ""Mail"", ""CreatedAt"")
+                        VALUES (@Name, @Surname, @Email, @CreatedAt)";
+
+        var parameters = new List<(string, object?)>
+        {
+            ("@Name", author.Name),
+            ("@Surname", author.Surname),
+            ("@Email", author.Email),
+            ("@CreatedAt", DateTime.Now),
         };
 
-        private int nextId = 3;
+        return _writer.WriteAsync(query, parameters);
+    }
 
-        public Author Create(Author author)
-        {
-            author = author with { Id = nextId };
-            _authors.Add(author);
-            nextId++;
-            return (author);
-        }
+    public Task<bool> Delete(int id)
+    {
+        var query = @"DELETE FROM ""Author"" WHERE (Id=@Id)";
+        return _writer.WriteAsync(query, new[] { ("@Id", (object?)id) });
+    }
 
-        public void Delete(int id) =>
-            _authors = _authors
-                .Where(x => x.Id != id)
-                .ToList();
+    public Task<IEnumerable<Author>> GetAll()
+    {
+        const string query = @"select * from ""Author""";
 
-        public IEnumerable<Author> GetAll() => _authors;
+        return _reader.QueryAsync(query, MapAuthor);
+    }
 
-        public Author? GetById(int id) => _authors.SingleOrDefault(x => x.Id == id);
-
-        //public void Update(Author author)
-        //{
-        //    _authors = _authors
-        //        .Where(x => x.Id != message.Id)
-        //        .ToList();
-
-        //    message = message with { UpdatedAt = DateTime.Now };
-
-        //    _messages.Add(message);
-        //}
+    public Task<Author?> GetById(int id)
+    {
+        var query = $@"select * 
+                    from ""Author""
+                    where ""Id""={id}";
+        return _reader.SingleQueryAsync(query, MapAuthor);
     }
 }

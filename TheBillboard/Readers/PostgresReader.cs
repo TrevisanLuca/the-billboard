@@ -38,4 +38,9 @@ public class PostgresReader : IReader
         
         return messages;
     }
+
+    public Task<TEntity?> SingleQueryAsync<TEntity>(string query, Func<IDataReader, TEntity> selector)
+    {
+        throw new NotImplementedException();
+    }
 }

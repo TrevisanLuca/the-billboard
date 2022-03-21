@@ -1,9 +1,9 @@
 ﻿using System.Data;
 using System.Data.Common;
 
+namespace TheBillboard.Abstract;
+
 public interface IWriter
 {
-    Task<bool> WriteAsync(string query, Action<DbParameterCollection> mapping);
-    //Task<bool> WriteAsync<TEntity>(string query, TEntity entity, Action<DbCommand, TEntity> mapping);
-    void MapParamToCommand(DbParameterCollection command, string name, object? value);
+    Task<bool> WriteAsync(string query, IEnumerable<(string, object?)> parameters);
 }

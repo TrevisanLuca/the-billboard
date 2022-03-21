@@ -1,5 +1,4 @@
 ﻿using System.Data;
-using System.Data.Common;
 using TheBillboard.Abstract;
 using TheBillboard.Models;
 
@@ -42,72 +41,50 @@ public class MessageGateway : IMessageGateway
         return _reader.QueryAsync(query, MapMessage);
     }
 
-    public async Task<Message?> GetById(int id)
+    public Task<Message?> GetById(int id)
     {
         var query = $@"select * 
                     from ""Message"" join ""Author"" A on A.""Id"" = ""Message"".""AuthorId""
-                    where ""Message"".""AuthorId""={id}";
-        var result = await _reader.QueryAsync(query, MapMessage);
-
-        return result.FirstOrDefault();
-    }
-
-    public void QueryMapping(DbParameterCollection parameters, Message message)
-    {
-        _writer.MapParamToCommand(parameters, "Title", message.Title);
-        _writer.MapParamToCommand(parameters, "Body", message.Body);
-        _writer.MapParamToCommand(parameters, "CreatedAt", message.CreatedAt);
-        _writer.MapParamToCommand(parameters, "UpdatedAt", message.UpdatedAt);
-        _writer.MapParamToCommand(parameters, "AuthorId", message.AuthorId);
+                    where ""Message"".""Id""={id}";
+        return _reader.SingleQueryAsync(query, MapMessage);
     }
 
     public Task<bool> Create(Message message)
     {
-        var query = @"INSERT INTO ""Message""(""Title"", ""Body"", ""CreatedAt"", ""UpdatedAt"", ""AuthorId"")
-                        VALUES (@Title, @Body, @CreatedAt, @UpdatedAt, @AuthorId)";
+        var query = @"INSERT INTO ""Message""(""Title"", ""Body"", ""CreatedAt"", ""AuthorId"")
+                        VALUES (@Title, @Body, @CreatedAt, @AuthorId)";
 
-        return _writer.WriteAsync(query, parameters => QueryMapping(parameters, message));
+        var parameters = new List<(string, object?)>
+        {
+            ("@Title",message.Title),
+            ("@Body",message.Body),
+            ("@CreatedAt", DateTime.Now),
+            ("@AuthorId", message.AuthorId)
+        };
+
+        return _writer.WriteAsync(query, parameters);
     }
 
-    //TODO substitute Delete and Update methods
-    public async Task<bool> Delete(int id)
+    public Task<bool> Delete(int id)
     {
-        var query = @"DELETE FROM public.""Message"" WHERE (Id='@Id')";
-        return await _writer.WriteAsync(query, parameters => {
-            _writer.MapParamToCommand(parameters, "Id", id);
-        });
+        var query = @"DELETE FROM ""Message"" WHERE (Id=@Id)";
+        return _writer.WriteAsync(query, new[] { ("@Id", (object?)id) });
     }
 
-
-    public async Task<bool> Update(Message message)
+    public Task<bool> Update(Message message)
     {
-        // TODO remove unnecessary variables in SET
-        var query = @"UPDATE public.""Message""(""Title"", ""Body"", ""CreatedAt"", ""UpdatedAt"", ""AuthorId"")
-                      SET (Title='@Title',Body='@Body',CreatedAt='@CreatedAt',UpdatedAt='@UpdatedAt',AuthorId='@AuthorId')
-                      WHERE (Id='@Id')";
-        // TODO: Passare Id alla query
-        return await _writer.WriteAsync(query, command => QueryMapping(command, message));
+        var query = @"UPDATE ""Message""
+                      SET Title=@Title,Body=@Body,UpdatedAt=@UpdatedAt,AuthorId=@AuthorId
+                      WHERE (Id=@Id)";
+
+        var parameters = new List<(string, object?)>
+        {
+            ("@Title",message.Title),
+            ("@Body",message.Body),
+            ("@UpdatedAt", DateTime.Now),
+            ("@AuthorId", message.AuthorId),
+            ("@Id",message.Id)
+        };
+        return _writer.WriteAsync(query, parameters);
     }
-
-    //public async Task<bool> Delete(int id)
-    //{
-    //    var query = $@"delete * 
-    //                from ""Message"" join ""Author"" A on A.""Id"" = ""Message"".""AuthorId""
-    //                where ""Message"".""AuthorId""={id}";
-    //    return await _writer.WriteAsync(query, _ => { });
-    //}
-
-    /*
-    public void Update(Message message)
-    {
-        //_messages = _messages
-        //    .Where(m => m.Id != message.Id)
-        //    .ToList();
-
-        //message = message with { UpdatedAt = DateTime.Now };
-
-        //_messages.Add(message);
-        throw new NotImplementedException();
-    }
-    */
 }
