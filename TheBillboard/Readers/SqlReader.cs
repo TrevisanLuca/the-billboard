@@ -17,7 +17,7 @@ public class SqlReader : IReader
 
     public async Task<IEnumerable<TEntity>> QueryAsync<TEntity>(string query, Func<IDataReader, TEntity> selector)
     {
-        var messages = new HashSet<TEntity>(); 
+        var entities = new HashSet<TEntity>(); 
         
         await using var connection = new SqlConnection(_connectionString);
         await using var command = new SqlCommand(query, connection);
@@ -26,14 +26,14 @@ public class SqlReader : IReader
         await using var dr = command.ExecuteReader();
         while (await dr.ReadAsync())
         {
-            var message = selector(dr);
-            messages.Add(message);
+            var entity = selector(dr);
+            entities.Add(entity);
         }
 
         await connection.CloseAsync();
         await connection.DisposeAsync();
         
-        return messages;
+        return entities;
     }
 
     public async Task<TEntity?> SingleQueryAsync<TEntity>(string query, Func<IDataReader, TEntity> selector)

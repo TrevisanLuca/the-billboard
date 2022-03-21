@@ -19,7 +19,7 @@ public class PostgresReader : IReader
 
     public async Task<IEnumerable<TEntity>> QueryAsync<TEntity>(string query, Func<IDataReader, TEntity> selector)
     {
-        var messages = new HashSet<TEntity>(); 
+        var entities = new HashSet<TEntity>(); 
         
         await using var connection = new NpgsqlConnection(_connectionString);
 
@@ -29,18 +29,33 @@ public class PostgresReader : IReader
         await using var dr = command.ExecuteReader();
         while (await dr.ReadAsync())
         {
-            var message = selector(dr);
-            messages.Add(message);
+            var entity = selector(dr);
+            entities.Add(entity);
         }
 
         await connection.CloseAsync();
         await connection.DisposeAsync();
         
-        return messages;
+        return entities;
     }
 
-    public Task<TEntity?> SingleQueryAsync<TEntity>(string query, Func<IDataReader, TEntity> selector)
+    public async Task<TEntity?> SingleQueryAsync<TEntity>(string query, Func<IDataReader, TEntity> selector)
     {
-        throw new NotImplementedException();
+        TEntity? result = default;
+
+        await using var connection = new NpgsqlConnection(_connectionString);
+        await using var command = new NpgsqlCommand(query, connection);
+
+        await connection.OpenAsync();
+        await using var dr = command.ExecuteReader();
+        if (await dr.ReadAsync())
+        {
+            result = selector(dr);
+        }
+
+        await connection.CloseAsync();
+        await connection.DisposeAsync();
+        
+        return result;
     }
 }
