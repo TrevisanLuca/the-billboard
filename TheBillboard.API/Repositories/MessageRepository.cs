@@ -49,7 +49,7 @@ public class MessageRepository : IMessageRepository
         return _messages;
     }
 
-    public Message GetById(int id)
+    public Message? GetById(int id)
     {
         return _messages.FirstOrDefault(m => m.Id == id);
     }

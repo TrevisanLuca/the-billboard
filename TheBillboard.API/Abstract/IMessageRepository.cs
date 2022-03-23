@@ -5,5 +5,5 @@ using Domain;
 public interface IMessageRepository
 {
     IEnumerable<Message> GetAll();
-    Message GetById(int id);
+    Message? GetById(int id);
 }
