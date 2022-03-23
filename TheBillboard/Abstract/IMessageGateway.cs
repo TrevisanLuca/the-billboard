@@ -4,9 +4,9 @@ namespace TheBillboard.Abstract;
 
 public interface IMessageGateway
 {
-    Task<IEnumerable<Message>> GetAll();
-    Message? GetById(int id);
+    IAsyncEnumerable<Message> GetAll();
+    Task<Message?> GetById(int id);
     Task<bool> Create(Message message);
-    void Update(Message message);
-    void Delete(int id);
+    Task<bool> Update(Message message);
+    Task<bool> Delete(int id);
 }

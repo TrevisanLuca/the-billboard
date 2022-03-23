@@ -22,8 +22,8 @@ builder.Services
 builder.Services.AddSingleton<IStudentGateway, StudentStudentGateway>();
 builder.Services.AddSingleton<IMessageGateway, MessageGateway>();
 builder.Services.AddSingleton<IAuthorGateway, AuthorGateway>();
-builder.Services.AddSingleton<IReader, PostgresReader>();
-builder.Services.AddSingleton<IWriter, PostgresWriter>();
+builder.Services.AddSingleton<IReader, SqlReader>();
+builder.Services.AddSingleton<IWriter, SqlWriter>();
 
 builder.Services.AddControllersWithViews();
 

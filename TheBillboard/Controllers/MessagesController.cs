@@ -18,22 +18,20 @@ public class MessagesController : Controller
         _authorGateway = authorGateway;
     }
 
-    public async Task<IActionResult> Index()
+    public IActionResult Index()
     {
-        var messages = await _messageGateway.GetAll();
+        var messages = _messageGateway.GetAll();
         var authors = _authorGateway.GetAll();
 
-        var messagesWithAuthor = messages.Select(message => MatchAuthorToMessage(message, authors));
-
         var createViewModel = new MessageCreationViewModel(new Message(), authors);
-        var indexModel = new MessagesIndexViewModel(createViewModel, messagesWithAuthor);
+        var indexModel = new MessagesIndexViewModel(createViewModel, messages);
         return View(indexModel);
     }
 
     [HttpGet]
-    public IActionResult Create(int? id)
+    public async Task<IActionResult> CreateAsync(int? id)
     {
-        var message = id is not null ? _messageGateway.GetById((int)id) : new Message();
+        var message = id is not null ? await _messageGateway.GetById((int)id) : new Message();
 
         if (message is null)
         {
@@ -47,7 +45,7 @@ public class MessagesController : Controller
     }
 
     [HttpPost]
-    public IActionResult Create(Message message)
+    public async Task<IActionResult> CreateAsync(Message message)
     {
         if (!ModelState.IsValid)
         {
@@ -56,36 +54,31 @@ public class MessagesController : Controller
 
         if (message.Id == default)
         {
-            _messageGateway.Create(message);
+            await _messageGateway.Create(message);
         }
         else
         {
-            _messageGateway.Update(message);
+            await _messageGateway.Update(message);
         }
 
         _logger.LogInformation($"Message received: {message.Title}");
         return RedirectToAction("Index");
     }
 
-    public IActionResult Detail(int id)
+    public async Task<IActionResult> DetailAsync(int id)
     {
-        var message = _messageGateway.GetById(id);
+        var message = await _messageGateway.GetById(id);
         if (message is null)
         {
             return View("Error");
         }
 
-        var authors = _authorGateway.GetAll();
-        var messageWithAuthor = MatchAuthorToMessage(message, authors);
-        return View(messageWithAuthor);
+        return View(message);
     }
 
-    public IActionResult Delete(int id)
+    public async Task<IActionResult> DeleteAsync(int id)
     {
-        _messageGateway.Delete(id);
+        _ = await _messageGateway.Delete(id);
         return RedirectToAction("Index");
     }
-
-    private MessageWithAuthor MatchAuthorToMessage(Message message, IEnumerable<Author> authors)
-        => new MessageWithAuthor(message, authors.FirstOrDefault(a => a.Id == message.AuthorId, new Author("Unknown Author")));
 }

@@ -1,20 +1,13 @@
-﻿using Npgsql;
+﻿using System.Data;
 using TheBillboard.Abstract;
 using TheBillboard.Models;
 
 namespace TheBillboard.Gateways;
 
-public class MessageGateway : IMessageGateway  
+public class MessageGateway : IMessageGateway
 {
     private readonly IReader _reader;
     private readonly IWriter _writer;
-
-    private ICollection<Message> _messages = new List<Message>()
-    {
-        new("Hello  World!", "What A Wonderful World!", 1, default, DateTime.Now.AddHours(-2), DateTime.Now.AddHours(-1), 1),
-        new("Hello  World!", "What A Wonderful World!", 1, default, DateTime.Now, DateTime.Now, 2),
-    };
-    private int _nextId = 3;
 
     public MessageGateway(IReader reader, IWriter writer)
     {
@@ -22,52 +15,82 @@ public class MessageGateway : IMessageGateway
         _writer = writer;
     }
 
-    public Task<IEnumerable<Message>> GetAll()
+    public IAsyncEnumerable<Message> GetAll()
     {
-        const string query = @"select * from ""Message"" join ""Author"" A on A.""Id"" = ""Message"".""AuthorId""";
+        const string query = @"SELECT M.Id, M.Title, M.Body, M.CreatedAt, M.AuthorId, M.UpdatedAt,
+                               A.Id, A.Name, A.Surname, A.Mail, A.CreatedAt
+                               FROM Message M JOIN Author A
+                               ON A.Id = M.AuthorId";
 
-        Message Map(NpgsqlDataReader dr)
-        {
-            return new Message
-            {
-                Id = dr["id"] as int?,
-                Body = dr["body"].ToString()!,
-                Title = dr["title"].ToString()!,
-                CreatedAt = dr["createdAt"] as DateTime?,
-                UpdatedAt = dr["updatedAt"] as DateTime?,
-                AuthorId = (int) dr["authorId"],
-                Author = new Author
-                {
-                    Id = dr["authorId"] as int?,
-                    Name = dr["name"].ToString()!,
-                    Surname = dr["surname"].ToString()!,
-                }
-            };
-        }
-        
-        return _reader.QueryAsync(query, Map);
+        return _reader.QueryAsync(query, MapMessage);
     }
 
-    public Message? GetById(int id) => _messages.SingleOrDefault(message => message.Id == id);
+    public Task<Message?> GetById(int id)
+    {
+        var query = $@"SELECT M.Id, M.Title, M.Body, M.CreatedAt, M.AuthorId, M.UpdatedAt,
+                       A.Id, A.Name, A.Surname, A.Mail, A.CreatedAt
+                       FROM Message M JOIN Author A
+                       ON A.Id = M.AuthorId
+                       WHERE M.Id={id}";
+
+        return _reader.SingleQueryAsync(query, MapMessage);
+    }
 
     public Task<bool> Create(Message message)
     {
-        return _writer.WriteAsync<Message>(string.Empty, default);
+        var query = @"INSERT INTO Message(Title, Body, CreatedAt, AuthorId)
+                      VALUES (@Title, @Body, @CreatedAt, @AuthorId)";
+
+        var parameters = new List<(string, object?)>
+        {
+            ("@Title",message.Title),
+            ("@Body",message.Body),
+            ("@CreatedAt", DateTime.Now),
+            ("@AuthorId", message.AuthorId)
+        };
+
+        return _writer.WriteAsync(query, parameters);
     }
 
-    public void Delete(int id) =>
-        _messages = _messages
-            .Where(message => message.Id != id)
-            .ToList();
-
-    public void Update(Message message)
+    public Task<bool> Update(Message message)
     {
-        _messages = _messages
-            .Where(m => m.Id != message.Id)
-            .ToList();
+        var query = @"UPDATE Message
+                      SET Title=@Title,Body=@Body,UpdatedAt=@UpdatedAt,AuthorId=@AuthorId
+                      WHERE (Id=@Id)";
 
-        message = message with { UpdatedAt = DateTime.Now };
+        var parameters = new List<(string, object?)>
+        {
+            ("@Title",message.Title),
+            ("@Body",message.Body),
+            ("@UpdatedAt", DateTime.Now),
+            ("@AuthorId", message.AuthorId),
+            ("@Id",message.Id)
+        };
 
-        _messages.Add(message);
+        return _writer.WriteAsync(query, parameters);
     }
+
+    public Task<bool> Delete(int id)
+    {
+        var query = @"DELETE FROM Message
+                      WHERE (Id=@Id)";
+
+        return _writer.WriteAsync(query, new[] { ("@Id", (object?)id) });
+    }
+
+    private Message MapMessage(IDataReader dr) => new Message
+    {
+        Id = dr["id"] as int?,
+        Body = dr["body"].ToString()!,
+        Title = dr["title"].ToString()!,
+        CreatedAt = dr["createdAt"] as DateTime?,
+        UpdatedAt = dr["updatedAt"] as DateTime?,
+        AuthorId = (int)dr["authorId"],
+        Author = new Author
+        {
+            Id = dr["authorId"] as int?,
+            Name = dr["name"].ToString()!,
+            Surname = dr["surname"].ToString()!,
+        }
+    };
 }

@@ -4,7 +4,7 @@ using TheBillboard.Options;
 
 namespace TheBillboard.Writers;
 
-public class PostgresWriter : IWriter
+public class PostgresWriter// : IWriter
 {
     private readonly string _connectionString;
 
@@ -27,6 +27,9 @@ public class PostgresWriter : IWriter
                                                   
         await command.PrepareAsync();             
         await command.ExecuteNonQueryAsync();
+
+        await connection.CloseAsync();
+        await connection.DisposeAsync();
 
         return true;
     }
