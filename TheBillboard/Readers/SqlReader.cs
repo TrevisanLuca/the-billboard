@@ -1,6 +1,5 @@
-﻿namespace TheBillboard.Readers;
+﻿namespace TheBillboard.MVC.Readers;
 
-using System.Collections.Immutable;
 using System.Data;
 using System.Data.SqlClient;
 using Abstract;

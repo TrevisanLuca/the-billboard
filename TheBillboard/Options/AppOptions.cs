@@ -1,4 +1,4 @@
-﻿namespace TheBillboard.Options;
+﻿namespace TheBillboard.MVC.Options;
 
 using System.ComponentModel.DataAnnotations;
 

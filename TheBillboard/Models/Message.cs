@@ -1,4 +1,4 @@
-﻿namespace TheBillboard.Models;
+﻿namespace TheBillboard.MVC.Models;
 
 using System.ComponentModel.DataAnnotations;
 

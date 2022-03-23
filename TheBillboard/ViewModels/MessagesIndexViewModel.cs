@@ -1,4 +1,4 @@
-﻿namespace TheBillboard.ViewModels;
+﻿namespace TheBillboard.MVC.ViewModels;
 
 using Models;
 

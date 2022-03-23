@@ -1,4 +1,4 @@
-﻿namespace TheBillboard.Controllers;
+﻿namespace TheBillboard.MVC.Controllers;
 
 using Abstract;
 using Microsoft.AspNetCore.Mvc;

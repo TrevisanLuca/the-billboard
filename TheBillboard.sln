@@ -1,6 +1,6 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TheBillboard", "TheBillboard\TheBillboard.csproj", "{9F524A19-D86A-450F-9242-0518A72334EF}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TheBillboard", "TheBillboard\TheBillboard.MVC.csproj", "{9F524A19-D86A-450F-9242-0518A72334EF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

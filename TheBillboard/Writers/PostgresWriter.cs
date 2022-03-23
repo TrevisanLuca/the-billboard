@@ -1,4 +1,4 @@
-﻿namespace TheBillboard.Writers;
+﻿namespace TheBillboard.MVC.Writers;
 
 using Microsoft.Extensions.Options;
 using Npgsql;

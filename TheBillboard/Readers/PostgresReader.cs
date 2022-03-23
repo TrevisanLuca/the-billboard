@@ -1,4 +1,4 @@
-﻿namespace TheBillboard.Readers;
+﻿namespace TheBillboard.MVC.Readers;
 
 using System.Data;
 using Abstract;

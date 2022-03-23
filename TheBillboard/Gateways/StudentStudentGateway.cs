@@ -1,4 +1,4 @@
-﻿namespace TheBillboard.Gateways;
+﻿namespace TheBillboard.MVC.Gateways;
 
 using Abstract;
 using Microsoft.Extensions.Options;
