@@ -25,20 +25,31 @@ public class MessageGateway : IMessageGateway
         return _reader.QueryAsync(query, MapMessage);
     }
 
-    public Task<Message?> GetById(int id)
+    public async Task<Message?> GetById(int id)
     {
-        var query = $@"SELECT M.Id, M.Title, M.Body, M.CreatedAt, M.AuthorId, M.UpdatedAt,
-                       A.Id, A.Name, A.Surname, A.Mail, A.CreatedAt
-                       FROM Message M JOIN Author A
-                       ON A.Id = M.AuthorId
-                       WHERE M.Id={id}";
+    // public Message(int id, string title, string body, int authorId, string name, string surname, string email, DateTime messageCreatedAt, DateTime messageUpdatedAt, DateTime authorCreatedAt)
 
-        return _reader.SingleQueryAsync(query, MapMessage);
+        const string query = "SELECT M.Id," +
+                                " M.Title" +
+                                ", M.Body" +
+                                ", M.AuthorId" +
+                                ", A.Name" +
+                                ", A.Surname" +
+                                ", A.Mail as Email" +
+                                ", M.CreatedAt as MessageCreatedAt" +
+                                ", M.UpdatedAt as MessageUpdatedAt" +
+                                ", A.CreatedAt as AuthorCreatedAt" +
+                                " " + 
+                                "FROM Message M JOIN Author A                           ON A.Id = M.AuthorId" +
+                                " " +
+                                "WHERE M.Id=@Id";
+
+        return await _reader.GetByIdAsync<Message>(query, id);
     }
 
     public Task<bool> Create(Message message)
     {
-        var query = @"INSERT INTO Message(Title, Body, CreatedAt, AuthorId)
+        const string query = @"INSERT INTO Message(Title, Body, CreatedAt, AuthorId)
                       VALUES (@Title, @Body, @CreatedAt, @AuthorId)";
 
         var parameters = new List<(string, object?)>

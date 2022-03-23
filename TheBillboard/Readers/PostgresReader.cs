@@ -45,4 +45,9 @@ public class PostgresReader : IReader
 
         return result;
     }
+
+    public Task<TEntity?> GetByIdAsync<TEntity>(string query, int id)
+    {
+        throw new NotImplementedException();
+    }
 }
