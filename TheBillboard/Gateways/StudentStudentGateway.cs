@@ -1,8 +1,8 @@
-﻿using Microsoft.Extensions.Options;
-using TheBillboard.Abstract;
-using TheBillboard.Options;
+﻿namespace TheBillboard.Gateways;
 
-namespace TheBillboard.Gateways;
+using Abstract;
+using Microsoft.Extensions.Options;
+using Options;
 
 public class StudentStudentGateway : IStudentGateway
 {
@@ -14,7 +14,7 @@ public class StudentStudentGateway : IStudentGateway
         _logger = logger;
         _options = options.Value;
     }
-    
+
     public IEnumerable<string> GetStudents()
     {
         _logger.LogInformation("GetStudents Called!");

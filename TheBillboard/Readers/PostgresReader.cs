@@ -1,12 +1,10 @@
-﻿using System.Data;
-using Microsoft.AspNetCore.Identity;
+﻿namespace TheBillboard.Readers;
+
+using System.Data;
+using Abstract;
 using Microsoft.Extensions.Options;
 using Npgsql;
-using TheBillboard.Abstract;
-using TheBillboard.Models;
-using TheBillboard.Options;
-
-namespace TheBillboard.Readers;
+using Options;
 
 public class PostgresReader : IReader
 {
@@ -25,10 +23,7 @@ public class PostgresReader : IReader
 
         await connection.OpenAsync();
         await using var dr = command.ExecuteReader();
-        while (await dr.ReadAsync())
-        {
-            yield return selector(dr);
-        }
+        while (await dr.ReadAsync()) yield return selector(dr);
 
         await connection.CloseAsync();
         await connection.DisposeAsync();
@@ -43,14 +38,11 @@ public class PostgresReader : IReader
 
         await connection.OpenAsync();
         await using var dr = command.ExecuteReader();
-        if (await dr.ReadAsync())
-        {
-            result = selector(dr);
-        }
+        if (await dr.ReadAsync()) result = selector(dr);
 
         await connection.CloseAsync();
         await connection.DisposeAsync();
-        
+
         return result;
     }
 }

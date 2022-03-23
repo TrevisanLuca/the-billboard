@@ -1,8 +1,8 @@
-﻿using System.Data;
-using TheBillboard.Abstract;
-using TheBillboard.Models;
+﻿namespace TheBillboard.Gateways;
 
-namespace TheBillboard.Gateways;
+using System.Data;
+using Abstract;
+using Models;
 
 public class MessageGateway : IMessageGateway
 {
@@ -43,8 +43,8 @@ public class MessageGateway : IMessageGateway
 
         var parameters = new List<(string, object?)>
         {
-            ("@Title",message.Title),
-            ("@Body",message.Body),
+            ("@Title", message.Title),
+            ("@Body", message.Body),
             ("@CreatedAt", DateTime.Now),
             ("@AuthorId", message.AuthorId)
         };
@@ -60,11 +60,11 @@ public class MessageGateway : IMessageGateway
 
         var parameters = new List<(string, object?)>
         {
-            ("@Title",message.Title),
-            ("@Body",message.Body),
+            ("@Title", message.Title),
+            ("@Body", message.Body),
             ("@UpdatedAt", DateTime.Now),
             ("@AuthorId", message.AuthorId),
-            ("@Id",message.Id)
+            ("@Id", message.Id)
         };
 
         return _writer.WriteAsync(query, parameters);
@@ -72,25 +72,28 @@ public class MessageGateway : IMessageGateway
 
     public Task<bool> Delete(int id)
     {
-        var query = @"DELETE FROM Message
+        const string query = @"DELETE FROM Message
                       WHERE (Id=@Id)";
 
-        return _writer.WriteAsync(query, new[] { ("@Id", (object?)id) });
+        return _writer.WriteAsync(query, new[] {("@Id", (object?) id)});
     }
 
-    private Message MapMessage(IDataReader dr) => new Message
+    private static Message MapMessage(IDataReader dr)
     {
-        Id = dr["id"] as int?,
-        Body = dr["body"].ToString()!,
-        Title = dr["title"].ToString()!,
-        CreatedAt = dr["createdAt"] as DateTime?,
-        UpdatedAt = dr["updatedAt"] as DateTime?,
-        AuthorId = (int)dr["authorId"],
-        Author = new Author
+        return new()
         {
-            Id = dr["authorId"] as int?,
-            Name = dr["name"].ToString()!,
-            Surname = dr["surname"].ToString()!,
-        }
-    };
+            Id = dr["id"] as int?,
+            Body = dr["body"].ToString()!,
+            Title = dr["title"].ToString()!,
+            CreatedAt = dr["createdAt"] as DateTime?,
+            UpdatedAt = dr["updatedAt"] as DateTime?,
+            AuthorId = (int) dr["authorId"],
+            Author = new Author
+            {
+                Id = dr["authorId"] as int?,
+                Name = dr["name"].ToString()!,
+                Surname = dr["surname"].ToString()!
+            }
+        };
+    }
 }

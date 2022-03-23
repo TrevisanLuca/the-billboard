@@ -1,9 +1,9 @@
-﻿using Microsoft.Extensions.Options;
-using System.Data.SqlClient;
-using TheBillboard.Abstract;
-using TheBillboard.Options;
+﻿namespace TheBillboard.Writers;
 
-namespace TheBillboard.Writers;
+using System.Data.SqlClient;
+using Abstract;
+using Microsoft.Extensions.Options;
+using Options;
 
 public class SqlWriter : IWriter
 {
@@ -19,10 +19,7 @@ public class SqlWriter : IWriter
         await using var connection = new SqlConnection(_connectionString);
         await using var command = new SqlCommand(query, connection);
 
-        foreach (var p in parameters)
-        {
-            command.Parameters.Add(new SqlParameter(p.Item1, p.Item2));
-        }
+        foreach (var p in parameters) command.Parameters.Add(new SqlParameter(p.Item1, p.Item2));
 
         await connection.OpenAsync();
         await command.ExecuteNonQueryAsync();

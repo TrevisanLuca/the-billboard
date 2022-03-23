@@ -1,15 +1,15 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using TheBillboard.Abstract;
-using TheBillboard.Models;
-using TheBillboard.ViewModels;
+﻿namespace TheBillboard.Controllers;
 
-namespace TheBillboard.Controllers;
+using Abstract;
+using Microsoft.AspNetCore.Mvc;
+using Models;
+using ViewModels;
 
 public class MessagesController : Controller
 {
-    private readonly IMessageGateway _messageGateway;
     private readonly IAuthorGateway _authorGateway;
     private readonly ILogger<MessagesController> _logger;
+    private readonly IMessageGateway _messageGateway;
 
     public MessagesController(IMessageGateway messageGateway, ILogger<MessagesController> logger, IAuthorGateway authorGateway)
     {
@@ -31,35 +31,23 @@ public class MessagesController : Controller
     [HttpGet]
     public async Task<IActionResult> CreateAsync(int? id)
     {
-        var message = id is not null ? await _messageGateway.GetById((int)id) : new Message();
+        var message = id is not null ? await _messageGateway.GetById((int) id) : new Message();
 
-        if (message is null)
-        {
-            return View("Error");
-        }
-        else
-        {
-            var viewModel = new MessageCreationViewModel(message, _authorGateway.GetAll());
-            return View(viewModel);
-        }
+        if (message is null) return View("Error");
+
+        var viewModel = new MessageCreationViewModel(message, _authorGateway.GetAll());
+        return View(viewModel);
     }
 
     [HttpPost]
     public async Task<IActionResult> CreateAsync(Message message)
     {
-        if (!ModelState.IsValid)
-        {
-            return View(new MessageCreationViewModel(message, _authorGateway.GetAll()));
-        }
+        if (!ModelState.IsValid) return View(new MessageCreationViewModel(message, _authorGateway.GetAll()));
 
         if (message.Id == default)
-        {
             await _messageGateway.Create(message);
-        }
         else
-        {
             await _messageGateway.Update(message);
-        }
 
         _logger.LogInformation($"Message received: {message.Title}");
         return RedirectToAction("Index");
@@ -68,10 +56,7 @@ public class MessagesController : Controller
     public async Task<IActionResult> DetailAsync(int id)
     {
         var message = await _messageGateway.GetById(id);
-        if (message is null)
-        {
-            return View("Error");
-        }
+        if (message is null) return View("Error");
 
         return View(message);
     }

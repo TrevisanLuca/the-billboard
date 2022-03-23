@@ -1,6 +1,5 @@
-﻿using TheBillboard.Models;
+﻿namespace TheBillboard.ViewModels;
 
-namespace TheBillboard.ViewModels
-{
-    public record MessagesIndexViewModel(MessageCreationViewModel MessageCreationViewModel, IAsyncEnumerable<Message> Messages);
-}
+using Models;
+
+public record MessagesIndexViewModel(MessageCreationViewModel MessageCreationViewModel, IAsyncEnumerable<Message> Messages);

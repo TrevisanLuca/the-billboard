@@ -1,6 +1,6 @@
-﻿using TheBillboard.Models;
+﻿namespace TheBillboard.Abstract;
 
-namespace TheBillboard.Abstract;
+using Models;
 
 public interface IMessageGateway
 {

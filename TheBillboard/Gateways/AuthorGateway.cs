@@ -1,8 +1,8 @@
-﻿using System.Data;
-using TheBillboard.Abstract;
-using TheBillboard.Models;
+﻿namespace TheBillboard.Gateways;
 
-namespace TheBillboard.Gateways;
+using System.Data;
+using Abstract;
+using Models;
 
 public class AuthorGateway : IAuthorGateway
 {
@@ -42,7 +42,7 @@ public class AuthorGateway : IAuthorGateway
             ("@Name", author.Name),
             ("@Surname", author.Surname),
             ("@Email", author.Email),
-            ("@CreatedAt", DateTime.Now),
+            ("@CreatedAt", DateTime.Now)
         };
 
         return _writer.WriteAsync(query, parameters);
@@ -53,7 +53,7 @@ public class AuthorGateway : IAuthorGateway
         var query = @"DELETE FROM ""Author""
                       WHERE (Id=@Id)";
 
-        return _writer.WriteAsync(query, new[] { ("@Id", (object?)id) });
+        return _writer.WriteAsync(query, new[] {("@Id", (object?) id)});
     }
 
     private Author MapAuthor(IDataReader dr)
@@ -64,7 +64,7 @@ public class AuthorGateway : IAuthorGateway
             Name = dr["Name"].ToString()!,
             Surname = dr["Surname"].ToString()!,
             Email = dr["Mail"].ToString(),
-            CreatedAt = dr["createdAt"] as DateTime?            
+            CreatedAt = dr["createdAt"] as DateTime?
         };
     }
 }

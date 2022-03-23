@@ -1,4 +1,3 @@
-﻿namespace TheBillboard.Models
-{
-    public record MessageCreationViewModel(Message Message, IAsyncEnumerable<Author> Authors);
-}
+﻿namespace TheBillboard.Models;
+
+public record MessageCreationViewModel(Message Message, IAsyncEnumerable<Author> Authors);

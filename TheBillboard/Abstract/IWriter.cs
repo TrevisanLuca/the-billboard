@@ -1,7 +1,4 @@
-﻿using System.Data;
-using System.Data.Common;
-
-namespace TheBillboard.Abstract;
+﻿namespace TheBillboard.Abstract;
 
 public interface IWriter
 {

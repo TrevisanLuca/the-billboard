@@ -1,16 +1,15 @@
-﻿using System.Diagnostics;
-using Microsoft.AspNetCore.Mvc;
-using TheBillboard.Abstract;
-using TheBillboard.Gateways;
-using TheBillboard.Models;
+﻿namespace TheBillboard.Controllers;
 
-namespace TheBillboard.Controllers;
+using System.Diagnostics;
+using Abstract;
+using Microsoft.AspNetCore.Mvc;
+using Models;
 
 public class HomeController : Controller
 {
     private readonly ILogger<HomeController> _logger;
     private readonly IStudentGateway _studentGateway;
-    
+
     public HomeController(IStudentGateway studentGateway, ILogger<HomeController> logger)
     {
         _logger = logger;
@@ -21,7 +20,7 @@ public class HomeController : Controller
     {
         return View();
     }
-    
+
     public IActionResult Students()
     {
         return View("Students", _studentGateway.GetStudents());

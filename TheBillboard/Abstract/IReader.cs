@@ -1,8 +1,6 @@
-﻿using Npgsql;
-using System.Data;
-using TheBillboard.Models;
+﻿namespace TheBillboard.Abstract;
 
-namespace TheBillboard.Abstract;
+using System.Data;
 
 public interface IReader
 {

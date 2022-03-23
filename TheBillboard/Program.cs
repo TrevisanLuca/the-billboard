@@ -1,4 +1,3 @@
-using Microsoft.Extensions.Options;
 using TheBillboard.Abstract;
 using TheBillboard.Gateways;
 using TheBillboard.Options;
@@ -45,7 +44,7 @@ app.UseRouting();
 app.UseAuthorization();
 
 app.MapControllerRoute(
-    name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}");
+    "default",
+    "{controller=Home}/{action=Index}/{id?}");
 
 app.Run();
