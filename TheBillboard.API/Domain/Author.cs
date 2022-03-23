@@ -1,0 +1,18 @@
+﻿namespace TheBillboard.API.Domain;
+
+public record Author
+(
+    string Name = "",
+    string Surname = "",
+    int? Id = default,
+    string? Email = "",
+    DateTime? CreatedAt = null,
+    DateTime? UpdatedAt = null
+)
+
+{
+    public override string ToString()
+    {
+        return Name + " " + Surname;
+    }
+}
