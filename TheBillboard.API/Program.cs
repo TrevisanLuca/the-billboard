@@ -2,6 +2,7 @@ using TheBillboard.API.Abstract;
 using TheBillboard.API.Options;
 using TheBillboard.API.Readers;
 using TheBillboard.API.Repositories;
+using TheBillboard.API.Writer;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -18,6 +19,7 @@ builder.Services
     .ValidateDataAnnotations();
 
 builder.Services.AddSingleton<IReader, SQLReader>();
+builder.Services.AddSingleton<IWriter, SQLWriter>();
 builder.Services.AddSingleton<IAuthorRepository, AuthorRepository>();
 builder.Services.AddSingleton<IMessageRepository, MessageRepository>();
 
