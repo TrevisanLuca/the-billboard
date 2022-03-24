@@ -1,4 +1,6 @@
 using TheBillboard.API.Abstract;
+using TheBillboard.API.Options;
+using TheBillboard.API.Readers;
 using TheBillboard.API.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -10,6 +12,13 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+builder.Services
+    .AddOptions<ConnectionStringOptions>()
+    .Bind(builder.Configuration.GetSection("ConnectionStrings"))
+    .ValidateDataAnnotations();
+
+builder.Services.AddSingleton<IReader, SQLReader>();
+builder.Services.AddSingleton<IAuthorRepository, AuthorRepository>();
 builder.Services.AddSingleton<IMessageRepository, MessageRepository>();
 
 var app = builder.Build();

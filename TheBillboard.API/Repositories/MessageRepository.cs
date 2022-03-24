@@ -2,55 +2,32 @@
 
 using Abstract;
 using Domain;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 public class MessageRepository : IMessageRepository
 {
-    private readonly Message[] _messages = {
-        new()
-        {
-            Author = new Author()
-            {
-                Id = 1,
-                Name = "John",
-                Surname = "Doe",
-                Email = "john.dow.mail.com",
-                CreatedAt = DateTime.Now,
-                UpdatedAt = DateTime.Now
-            },
-            Id = 1,
-            Title = "Hello",
-            Body = "Hello World!",
-            CreatedAt = DateTime.Now,
-            UpdatedAt = DateTime.Now,
-            AuthorId = 1
-        },
-        new()
-        {
-            Author = new Author()
-            {
-                Id = 2,
-                Name = "Jane",
-                Surname = "Doe",
-                Email = "jane.doe.mail.com",
-                CreatedAt = DateTime.Now,
-                UpdatedAt = DateTime.Now
-            },
-            Id = 2,
-            Title = "Hi",
-            Body = "Hi World!",
-            CreatedAt = DateTime.Now,
-            UpdatedAt = DateTime.Now,
-            AuthorId = 2
-        }
-    };
-    
-    public IEnumerable<Message> GetAll()
+    private readonly IReader _reader;
+
+    public MessageRepository(IReader reader)
     {
-        return _messages;
+        _reader = reader;
+    }
+    
+    public async Task<IEnumerable<Message?>> GetAllAsync()
+    {
+        const string query = @"SELECT M.Id, M.Title, M.Body, M.CreatedAt as messageCreatedAt, M.AuthorId, M.UpdatedAt as messageUpdatedAt,
+                               A.Name, A.Surname, A.Mail, A.CreatedAt as authorCreatedAt
+                               FROM Message M JOIN Author A
+                               ON A.Id = M.AuthorId";
+        return await _reader.QueryAsync<Message>(query);
     }
 
-    public Message? GetById(int id)
+    public async Task<Message?> GetByIdAsync(int id)
     {
-        return _messages.FirstOrDefault(m => m.Id == id);
+        const string query = @"SELECT M.Id, M.Title, M.Body, M.CreatedAt as messageCreatedAt, M.AuthorId, M.UpdatedAt as messageUpdatedAt,
+                               A.Name, A.Surname, A.Mail, A.CreatedAt as authorCreatedAt FROM Message M JOIN Author A ON A.Id = M.AuthorId WHERE M.Id=@Id";
+
+        return await _reader.GetByIdAsync<Message>(query, id);        
     }
 }

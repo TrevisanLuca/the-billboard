@@ -96,8 +96,8 @@ public class MessageGateway : IMessageGateway
             Id = dr["id"] as int?,
             Body = dr["body"].ToString()!,
             Title = dr["title"].ToString()!,
-            CreatedAt = dr["createdAt"] as DateTime?,
-            UpdatedAt = dr["updatedAt"] as DateTime?,
+            MessageCreatedAt = dr["createdAt"] as DateTime?,//todo
+            MessageUpdatedAt = dr["updatedAt"] as DateTime?,//todo
             AuthorId = (int) dr["authorId"],
             Author = new Author
             {

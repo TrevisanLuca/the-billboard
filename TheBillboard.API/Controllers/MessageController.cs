@@ -4,6 +4,7 @@ using Abstract;
 using Bogus;
 using Domain;
 using Microsoft.AspNetCore.Mvc;
+using System.Threading.Tasks;
 
 [ApiController]
 [Route("[controller]")]
@@ -17,13 +18,13 @@ public class MessageController : ControllerBase
     }
     
     [HttpGet]
-    public IActionResult GetAll()
+    public async Task<IActionResult> GetAllAsync()
     {
-        return Ok(_messageRepository.GetAll());
+        return Ok(await _messageRepository.GetAllAsync());
     }
     
     [HttpGet("{id:int}")]
-    public IActionResult GetById(int id)
+    public async Task<IActionResult> GetByIdAsync(int id)
     {
         if (!ModelState.IsValid)
         {
@@ -32,7 +33,7 @@ public class MessageController : ControllerBase
 
         try
         {
-            var message = _messageRepository.GetById(id);
+            var message = await _messageRepository.GetByIdAsync(id);
 
             return message is not null
                 ? Ok(message)
