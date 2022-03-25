@@ -20,6 +20,8 @@ public class MessageController : ControllerBase
     [HttpGet]
     public async Task<IActionResult> GetAllAsync()
     {
+        //prende i message await _messageRepository.GetAllAsync()
+        //per ogni message creai un messageDTO 
         return Ok(await _messageRepository.GetAllAsync());
     }
     

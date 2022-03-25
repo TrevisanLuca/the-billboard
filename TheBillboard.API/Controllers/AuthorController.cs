@@ -43,11 +43,8 @@ namespace TheBillboard.API.Controllers
                 return BadRequest(e.Message);
             }
         }
-        [HttpPost()]//fa in automatico così //così funziona, bast mettere in parametri in firma
-        //committo su github così avete tutti il codice
-        //cerco di capire i dto bene per domani, mandami il link per email che l ho chiuso
-        // https://github.com/TrevisanLuca/the-billboard
-        public async Task<IActionResult> Create(string Name, string Surname, string Email)//(AuthorDto authorDto)
+        [HttpPost]        
+        public async Task<IActionResult> Create(AuthorInMessageDto newAuthor)
         {
             if (!ModelState.IsValid)
             {
@@ -56,16 +53,30 @@ namespace TheBillboard.API.Controllers
 
             try
             {
-                var author = await _authorRepository.GetByIdAsync(1);
-
-                return author is not null
-                    ? Ok(author)
+                var createdId = await _authorRepository.Create(newAuthor);
+                return createdId > 0
+                    ? Created($"{this.Request.Scheme}://{this.Request.Host}{this.Request.Path}/{createdId}", "Created author "+ createdId)
                     : NotFound();
             }
             catch (Exception e)
             {
-                return BadRequest(e.Message);
+                return Problem(e.Message, statusCode: StatusCodes.Status500InternalServerError);
             }
+        }
+
+        [HttpDelete]
+        public async Task<IActionResult> Delete(int id)
+        {
+            //todo check if author is already used
+            if (await _authorRepository.Delete(id))
+                return Ok("Deleted author " + id);
+            else
+                return NotFound();
+        }
+        [HttpPut]
+        public async Task<IActionResult> Update()
+        {
+
         }
     }
 }
