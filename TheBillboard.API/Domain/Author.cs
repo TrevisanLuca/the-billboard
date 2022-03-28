@@ -7,11 +7,4 @@ public record Author(
         string Mail = "",
         DateTime? CreatedAt = default,
         DateTime? UpdatedAt = default
-        ) : DomainBase(Id, CreatedAt, UpdatedAt)
-{       
-
-    public override string ToString()
-    {
-        return Name + " " + Surname;
-    }
-};
+        ) : DomainBase(Id, CreatedAt, UpdatedAt);

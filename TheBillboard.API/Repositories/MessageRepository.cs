@@ -19,22 +19,22 @@ public class MessageRepository : IMessageRepository
 
     public async IAsyncEnumerable<SimpleMessageDto> GetAllAsync()
     {
-        const string query = @"SELECT M.Id, M.Title, M.Body, M.CreatedAt, M.UpdatedAt,
+        const string query = @"SELECT M.Id, M.Title, M.Body, M.CreatedAt, M.UpdatedAt, M.AuthorId,
                                A.Name, A.Surname, A.Mail FROM Message M JOIN Author A ON A.Id = M.AuthorId";
         var queryResult = await _reader.QueryTEntityAsync<MessageFromDB>(query);
         foreach (var message in queryResult)
-            yield return new SimpleMessageDto(message.Id, message.Title, message.Body, message.CreatedAt, message.UpdatedAt, new AuthorForCreateDto(message.Name,message.Surname,message.Mail));
+            yield return new SimpleMessageDto(message.Id, message.Title, message.Body, message.CreatedAt, message.UpdatedAt, new SimpleAuthorDto(message.AuthorId, message.Name,message.Surname,message.Mail));
     }
 
     public async Task<SimpleMessageDto?> GetByIdAsync(int id)
     {
-        const string query = @"SELECT M.Id, M.Title, M.Body, M.CreatedAt, M.UpdatedAt,
+        const string query = @"SELECT M.Id, M.Title, M.Body, M.CreatedAt, M.UpdatedAt, M.AuthorId,
                                A.Name, A.Surname, A.Mail FROM Message M JOIN Author A ON A.Id = M.AuthorId WHERE M.Id=@Id";
         var queryResult = await _reader.QuerySingleTEntityAsync<MessageFromDB>(query, new { Id = id });
 
         return queryResult is null ? 
             null : 
-            new SimpleMessageDto(queryResult.Id, queryResult.Title, queryResult.Body, queryResult.CreatedAt, queryResult.UpdatedAt, new AuthorForCreateDto(queryResult.Name, queryResult.Surname, queryResult.Mail));
+            new SimpleMessageDto(queryResult.Id, queryResult.Title, queryResult.Body, queryResult.CreatedAt, queryResult.UpdatedAt, new SimpleAuthorDto(queryResult.AuthorId, queryResult.Name, queryResult.Surname, queryResult.Mail));
     }
 
     public async Task<int?> CreateAsync(MessageForCreateDto message)
@@ -53,7 +53,7 @@ public class MessageRepository : IMessageRepository
                                            ,@UpdatedAt
                                            ,@AuthorId)";
 
-        var messageForQuery = new Message(0, message.Title, message.Body, DateTime.Now, DateTime.Now, message.AuthorId);
+        var messageForQuery = new Message(default, message.Title, message.Body, DateTime.Now, DateTime.Now, message.AuthorId);
 
         return await _writer.WriteInDB(query, messageForQuery);
     }
@@ -67,7 +67,7 @@ public class MessageRepository : IMessageRepository
                                OUTPUT inserted.[Id]
                                 WHERE Id=@Id";
 
-        var messageForQuery = new Message(message.Id, message.Title, message.Body, default, DateTime.Now, 0);
+        var messageForQuery = new Message(message.Id, message.Title, message.Body, default, DateTime.Now, default);
 
         return await _writer.WriteInDB(query, messageForQuery);
     }

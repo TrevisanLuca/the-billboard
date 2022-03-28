@@ -1,8 +1,6 @@
 ﻿namespace TheBillboard.API.Controllers;
 
 using Abstract;
-using Bogus;
-using Domain;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 using TheBillboard.API.Dtos;
@@ -58,6 +56,7 @@ public class MessageController : ControllerBase
             return Problem(e.Message, statusCode: StatusCodes.Status500InternalServerError);
         }
     }
+
     [HttpDelete("{id:int}")]
     public async Task<IActionResult> DeleteAsync(int id)
     {
@@ -72,7 +71,7 @@ public class MessageController : ControllerBase
 
             return deletedMessageId > 0
                 ? Ok($"{this.Request.Scheme}://{this.Request.Host}{this.Request.Path}")
-                : Problem("Message wasn't found", statusCode: StatusCodes.Status500InternalServerError);
+                : Problem(statusCode: StatusCodes.Status500InternalServerError);
         }
         catch (Exception e)
         {

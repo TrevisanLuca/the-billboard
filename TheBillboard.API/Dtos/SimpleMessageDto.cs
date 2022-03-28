@@ -6,6 +6,6 @@
         string Body,
         DateTime CreatedAt,
         DateTime UpdatedAt,
-        AuthorForCreateDto author
+        SimpleAuthorDto author
         );
 }

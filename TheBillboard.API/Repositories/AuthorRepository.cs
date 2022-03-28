@@ -46,7 +46,7 @@ namespace TheBillboard.API.Repositories
                                           @Mail, 
                                           @CreatedAt, 
                                           @UpdatedAt)";
-            var authorForQuery = new Author(-1, author.Name, author.Surname, author.Email, DateTime.Now, DateTime.Now);
+            var authorForQuery = new Author(default, author.Name, author.Surname, author.Email, DateTime.Now, DateTime.Now);
             return await _writer.WriteInDB(query, authorForQuery);
         }
         public async Task<int?> UpdateAsync(AuthorForUpdateDto author)

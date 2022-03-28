@@ -6,6 +6,7 @@
         string Body,
         DateTime CreatedAt,
         DateTime UpdatedAt,
+        int AuthorId,
         string Name,
         string Surname,
         string Mail

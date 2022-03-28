@@ -24,7 +24,7 @@ namespace TheBillboard.API.Writer
             }
             catch (Exception)
             {
-                return -1;
+                return 0;
             }
         }
     }

@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using TheBillboard.API.Abstract;
 using TheBillboard.API.Dtos;
-using TheBillboard.API.Repositories;
 
 namespace TheBillboard.API.Controllers
 {
@@ -56,6 +55,7 @@ namespace TheBillboard.API.Controllers
                 return Problem(e.Message, statusCode: StatusCodes.Status500InternalServerError);
             }
         }
+
         [HttpDelete("{id:int}")]
         public async Task<IActionResult> DeleteAsync(int id)
         {
@@ -70,9 +70,7 @@ namespace TheBillboard.API.Controllers
 
                 return affectedRows > 0
                     ? Ok($"{this.Request.Scheme}://{this.Request.Host}{this.Request.Path}")
-                    : affectedRows == 0
-                        ? Problem("Author wasn't found", statusCode: StatusCodes.Status500InternalServerError)
-                        : Problem("Author is in use", statusCode: StatusCodes.Status500InternalServerError);
+                    : Problem(statusCode: StatusCodes.Status500InternalServerError);
             }
             catch (Exception e)
             {

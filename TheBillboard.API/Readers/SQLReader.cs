@@ -10,7 +10,6 @@ namespace TheBillboard.API.Readers
     public class SQLReader : IReader
     {
         private readonly string _connectionstring;
-
         public SQLReader(IOptions<ConnectionStringOptions> options) => _connectionstring = options.Value.DefaultDatabase;
 
         public async Task<IEnumerable<TEntity>> QueryTEntityAsync<TEntity>(string query) =>
