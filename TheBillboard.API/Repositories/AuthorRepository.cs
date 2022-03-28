@@ -10,92 +10,59 @@ namespace TheBillboard.API.Repositories
     {
         private readonly IReader _reader;
         private readonly IWriter _writer;
-
         public AuthorRepository(IReader reader, IWriter writer)
         {
             _reader = reader;
             _writer = writer;
         }
 
-        public async Task<IEnumerable<AuthorDto?>> GetAllAsync()
+        public async IAsyncEnumerable<SimpleAuthorDto> GetAllAsync()
         {
-            const string query = @"SELECT Name, Surname, Mail, CreatedAt, UpdatedAt
-                               FROM Author";
-
-            return await _reader.QueryAsync<AuthorDto>(query);
+            const string query = @"SELECT * FROM Author";
+            var queryResult = await _reader.QueryTEntityAsync<Author>(query);
+            foreach (var author in queryResult)
+                yield return new SimpleAuthorDto(author.Id, author.Name, author.Surname, author.Mail);
         }
-
-        public async Task<AuthorDto?> GetByIdAsync(int id)
+        public async Task<SimpleAuthorDto?> GetByIdAsync(int id)
         {
-            const string query = $@"SELECT Name, Surname, Mail, CreatedAt, UpdatedAt
-                       FROM Author
-                       WHERE Id=@Id";
-
-            return await _reader.GetByIdAsync<AuthorDto>(query, id);
+            const string query = @"SELECT * FROM Author WHERE Id=@Id";
+            var queryResult = await _reader.QuerySingleTEntityAsync<Author>(query, new { Id = id });
+            return queryResult is null
+                ? null
+                : new SimpleAuthorDto(queryResult.Id, queryResult.Name, queryResult.Surname, queryResult.Mail);
         }
-
-        public async Task<int> Create(AuthorInMessageDto author)
+        public async Task<int?> CreateAsync(AuthorForCreateDto author)
         {
-            
-            const string query = $@"INSERT INTO [dbo].[Author]
-           ([Name]
-           ,[Surname]
-           ,[Mail]
-           ,[CreatedAt]
-           ,[UpdatedAt]) 
-            OUTPUT inserted.[Id]
-            VALUES
-           (@Name
-           ,@Surname
-           ,@Mail
-           ,@CreatedAt
-           ,@UpdatedAt)";
-
-            var parameters = new DynamicParameters();
-            parameters.Add("@Name", author.Name, DbType.String);
-            parameters.Add("@Surname", author.Surname, DbType.String);
-            parameters.Add("@Mail", author.Email, DbType.String);
-            parameters.Add("@CreatedAt", DateTime.Now, DbType.DateTime);
-            parameters.Add("@UpdatedAt", DateTime.Now, DbType.DateTime);  
-
-            var result = await _writer.WriteWithReturnAsync<int>(query, parameters);
-            return result;
+            const string query = @"INSERT INTO [dbo].[Author]
+                                         ([Name]
+                                         ,[Surname]
+                                         ,[Mail]
+                                         ,[CreatedAt]
+                                         ,[UpdatedAt]) 
+                                   OUTPUT inserted.[Id]
+                                   VALUES
+                                         (@Name, 
+                                          @Surname,
+                                          @Mail, 
+                                          @CreatedAt, 
+                                          @UpdatedAt)";
+            var authorForQuery = new Author(0, author.Name, author.Surname, author.Email, DateTime.Now, DateTime.Now);
+            return await _writer.WriteInDB(query, authorForQuery);
         }
-
-        public Task<bool> Delete(int id)
+        public async Task<int?> UpdateAsync(AuthorForUpdateDto author)
         {
-            const string query = $@"DELETE FROM [dbo].[Author] WHERE Id=@Id";
-
-            var parameters = new DynamicParameters();
-            parameters.Add("Id", id, DbType.Int32);
-
-            return _writer.WriteAsync(query, parameters);
+            const string query = @"UPDATE Author
+                                   SET Name = @Name, Surname = @Surname, Mail = @Mail, UpdatedAt = @UpdatedAt 
+                                   OUTPUT inserted.[Id] 
+                                   WHERE Id = @Id";
+            var authorForQuery = new Author(author.id, author.Name, author.Surname, author.Email, default, DateTime.Now);
+            return await _writer.WriteInDB(query, authorForQuery);
         }
-
-        public Task<bool> Update(Author author)
+        public async Task<int> DeleteAsync(int id)
         {
-            throw new NotImplementedException();
+            const string query = @"DELETE FROM Author
+                                   WHERE Id = @Id";
+            return await _writer.DeleteInDB(query, new { Id = id });
         }
     }
 }
-
-// insert into message(...) output inserted.id values(...)
-
-/*
- * public MessageDto Create(MessageDto message)
-    {
-        var lastId = _messages.Max(m => m.Id);
-        var newId = (lastId ?? 0) + 1;
-        
-        var newMessage = new Message(newId, message.Title, message.Body, message.AuthorId, DateTime.Now, default);
-        _messages.Add(newMessage);
-        
-        return new MessageDto()
-        {
-            Title = newMessage.Title,
-            Body = newMessage.Body,
-            AuthorId = newMessage.AuthorId,
-            Id = newId
-        };
-    }
- */

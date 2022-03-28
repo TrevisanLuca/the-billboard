@@ -9,26 +9,14 @@ namespace TheBillboard.API.Readers
 {
     public class SQLReader : IReader
     {
-        private readonly string _connectionString;
+        private readonly string _connectionstring;
 
-        public SQLReader(IOptions<ConnectionStringOptions> options)
-        {
-            _connectionString = options.Value.DefaultDatabase;
-        }
+        public SQLReader(IOptions<ConnectionStringOptions> options) => _connectionstring = options.Value.DefaultDatabase;
 
-        public async Task<IEnumerable<TEntity?>> QueryAsync<TEntity>(string query)
-        {
-            await using var conn = new SqlConnection { ConnectionString = _connectionString };
-            IEnumerable<TEntity?> result = await conn.QueryAsync<TEntity>(query, commandType: CommandType.Text, commandTimeout: 10);
-            return result;            
-        }
+        public async Task<IEnumerable<TEntity>> QueryTEntityAsync<TEntity>(string query) =>
+            await new SqlConnection(_connectionstring).QueryAsync<TEntity>(query, commandType: CommandType.Text, commandTimeout: 10);
 
-        public async Task<TEntity?> GetByIdAsync<TEntity>(string query, int id)
-        {
-            await using var conn = new SqlConnection { ConnectionString = _connectionString };
-            IEnumerable<TEntity?> result = await conn.QueryAsync<TEntity>(query, param: new { Id = id }, commandType: CommandType.Text, commandTimeout: 10);
-
-            return result.FirstOrDefault();
-        }
+        public async Task<TEntity> QuerySingleTEntityAsync<TEntity>(string query, object parameters) =>
+            await new SqlConnection(_connectionstring).QuerySingleOrDefaultAsync<TEntity>(query, parameters, commandType: CommandType.Text, commandTimeout: 10);
     }
 }

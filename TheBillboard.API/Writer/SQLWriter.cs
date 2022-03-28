@@ -9,24 +9,22 @@ namespace TheBillboard.API.Writer
 {
     public class SQLWriter : IWriter
     {
-        private readonly string _connectionString;
+        private readonly string _connectionstring;
+        public SQLWriter(IOptions<ConnectionStringOptions> options) => _connectionstring = options.Value.DefaultDatabase;
 
-        public SQLWriter(IOptions<ConnectionStringOptions> options)
-        {
-            _connectionString = options.Value.DefaultDatabase;
-        }
+        public async Task<int?> WriteInDB<TDto>(string query, TDto objectToWrite) =>
+            (await new SqlConnection(_connectionstring).ExecuteScalarAsync(query, objectToWrite, commandTimeout: 10)) as int?;
 
-        public async Task<bool> WriteAsync(string query, DynamicParameters parameters)
+        public async Task<int> DeleteInDB(string query, object parameters)
         {
-            await using var connection = new SqlConnection(_connectionString);
-            await connection.ExecuteAsync(query, parameters);
-            return true;
-        }
-        public async Task<TEntity> WriteWithReturnAsync<TEntity>(string query, DynamicParameters parameters)
-        {
-            await using var connection = new SqlConnection(_connectionString);
-            var result = await connection.QuerySingleAsync<TEntity>(query, parameters);
-            return result;
+            try
+            {
+                return await new SqlConnection(_connectionstring).ExecuteAsync(query, parameters);
+            }
+            catch (Exception)
+            {
+                return -1;
+            }
         }
     }
 }

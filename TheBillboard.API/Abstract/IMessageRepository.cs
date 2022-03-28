@@ -5,6 +5,9 @@ using TheBillboard.API.Dtos;
 
 public interface IMessageRepository
 {
-    Task<IEnumerable<MessageDto?>> GetAllAsync();
-    Task<MessageDto?> GetByIdAsync(int id);
+    IAsyncEnumerable<SimpleMessageDto> GetAllAsync();
+    Task<SimpleMessageDto?> GetByIdAsync(int id);
+    Task<int?> CreateAsync(MessageForCreateDto message);
+    Task<int> DeleteAsync(int id);
+    Task<int?> UpdateAsync(MessageForUpdateDto message);
 }

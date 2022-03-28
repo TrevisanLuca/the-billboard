@@ -4,7 +4,7 @@ namespace TheBillboard.API.Abstract
 {
     public interface IReader
     {
-        Task<IEnumerable<TEntity?>> QueryAsync<TEntity>(string query);
-        public Task<TEntity?> GetByIdAsync<TEntity>(string query, int id);
+        Task<IEnumerable<TEntity>> QueryTEntityAsync<TEntity>(string query);
+        Task<TEntity> QuerySingleTEntityAsync<TEntity>(string query, object parameters);
     }
 }

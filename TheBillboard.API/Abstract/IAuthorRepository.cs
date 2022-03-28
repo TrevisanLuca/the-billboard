@@ -5,9 +5,10 @@ namespace TheBillboard.API.Abstract
 {
     public interface IAuthorRepository
     {
-        Task<IEnumerable<AuthorDto?>> GetAllAsync();
-        Task<AuthorDto?> GetByIdAsync(int id);
-        Task<bool> Delete(int id);
-        Task<int> Create(AuthorInMessageDto author);
+        IAsyncEnumerable<SimpleAuthorDto> GetAllAsync();
+        Task<SimpleAuthorDto?> GetByIdAsync(int id);
+        Task<int?> CreateAsync(AuthorForCreateDto author);
+        Task<int> DeleteAsync(int id);
+        Task<int?> UpdateAsync(AuthorForUpdateDto author);
     }
 }
