@@ -1,14 +1,12 @@
-﻿using TheBillboard.API.Domain;
-using TheBillboard.API.Dtos;
+﻿namespace TheBillboard.API.Abstract;
 
-namespace TheBillboard.API.Abstract
+using Dtos;
+
+public interface IAuthorRepository
 {
-    public interface IAuthorRepository
-    {
-        IAsyncEnumerable<SimpleAuthorDto> GetAllAsync();
-        Task<SimpleAuthorDto?> GetByIdAsync(int id);
-        Task<int?> CreateAsync(AuthorForCreateDto author);
-        Task<bool> DeleteAsync(int id);
-        Task<int?> UpdateAsync(AuthorForUpdateDto author);
-    }
+    IAsyncEnumerable<SimpleAuthorDto> GetAllAsync();
+    Task<SimpleAuthorDto?> GetByIdAsync(int id);
+    Task<int?> CreateAsync(AuthorForCreateDto author);
+    Task<bool> DeleteAsync(int id);
+    Task<int?> UpdateAsync(AuthorForUpdateDto author);
 }

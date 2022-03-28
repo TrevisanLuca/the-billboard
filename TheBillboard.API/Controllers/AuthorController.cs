@@ -1,99 +1,98 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using TheBillboard.API.Abstract;
-using TheBillboard.API.Dtos;
+﻿namespace TheBillboard.API.Controllers;
 
-namespace TheBillboard.API.Controllers
+using Microsoft.AspNetCore.Mvc;
+using Abstract;
+using Dtos;
+
+[ApiController]
+[Route("[controller]")]
+public class AuthorController : ControllerBase
 {
-    [ApiController]
-    [Route("[controller]")]
-    public class AuthorController : ControllerBase
+    private readonly IAuthorRepository _authorRepository;
+    public AuthorController(IAuthorRepository authorRepository) => _authorRepository = authorRepository;
+
+    [HttpGet]
+    public IActionResult GetAllAsync() => Ok(_authorRepository.GetAllAsync());
+
+    [HttpGet("{id:int}")]
+    public async Task<IActionResult> GetByIdAsync(int id)
     {
-        private readonly IAuthorRepository _authorRepository;
-        public AuthorController(IAuthorRepository authorRepository) => _authorRepository = authorRepository;
+        if (!ModelState.IsValid)
+            return BadRequest(ModelState);
+        if (id <= 0)
+            return NotFound();
 
-        [HttpGet]
-        public IActionResult GetAllAsync() => Ok(_authorRepository.GetAllAsync());
-
-        [HttpGet("{id:int}")]
-        public async Task<IActionResult> GetByIdAsync(int id)
+        try
         {
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
-            if (id <= 0)
-                return NotFound();
+            var author = await _authorRepository.GetByIdAsync(id);
 
-            try
-            {
-                var author = await _authorRepository.GetByIdAsync(id);
-
-                return author is not null
-                    ? Ok(author)
-                    : NotFound();
-            }
-            catch (Exception e)
-            {
-                return Problem(e.Message);
-            }
+            return author is not null
+                ? Ok(author)
+                : NotFound();
         }
-
-        [HttpPost]
-        public async Task<IActionResult> CreateAsync(AuthorForCreateDto author)
+        catch (Exception e)
         {
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
-
-            try
-            {
-                var newAuthorId = await _authorRepository.CreateAsync(author);
-
-                return newAuthorId is not null
-                    ? Created($"{this.Request.Scheme}://{this.Request.Host}{this.Request.Path}/{newAuthorId}", newAuthorId)
-                    : NotFound();
-            }
-            catch (Exception e)
-            {
-                return Problem(e.Message, statusCode: StatusCodes.Status500InternalServerError);
-            }
+            return Problem(e.Message);
         }
+    }
 
-        [HttpDelete("{id:int}")]
-        public async Task<IActionResult> DeleteAsync(int id)
+    [HttpPost]
+    public async Task<IActionResult> CreateAsync(AuthorForCreateDto author)
+    {
+        if (!ModelState.IsValid)
+            return BadRequest(ModelState);
+
+        try
         {
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
-            if (id <= 0)
-                return NotFound();
+            var newAuthorId = await _authorRepository.CreateAsync(author);
 
-            try
-            {              
-                return await _authorRepository.DeleteAsync(id)
-                    ? Ok($"{this.Request.Scheme}://{this.Request.Host}{this.Request.Path}")
-                    : Problem(statusCode: StatusCodes.Status500InternalServerError);
-            }
-            catch (Exception e)
-            {
-                return Problem(e.Message, statusCode: StatusCodes.Status500InternalServerError);
-            }
+            return newAuthorId is not null
+                ? Created($"{this.Request.Scheme}://{this.Request.Host}{this.Request.Path}/{newAuthorId}", newAuthorId)
+                : NotFound();
         }
-
-        [HttpPut]
-        public async Task<IActionResult> UpdateAsync(AuthorForUpdateDto author)
+        catch (Exception e)
         {
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
+            return Problem(e.Message, statusCode: StatusCodes.Status500InternalServerError);
+        }
+    }
 
-            try
-            {
-                var updatedAuthorId = await _authorRepository.UpdateAsync(author);
+    [HttpDelete("{id:int}")]
+    public async Task<IActionResult> DeleteAsync(int id)
+    {
+        if (!ModelState.IsValid)
+            return BadRequest(ModelState);
+        if (id <= 0)
+            return NotFound();
 
-                return updatedAuthorId > 0
-                    ? Ok(new { Uri = $"{this.Request.Scheme}://{this.Request.Host}{this.Request.Path}" + updatedAuthorId, Value = updatedAuthorId })
-                    : Problem(statusCode: StatusCodes.Status500InternalServerError);
-            }
-            catch (Exception e)
-            {
-                return Problem(e.Message, statusCode: StatusCodes.Status500InternalServerError);
-            }
+        try
+        {              
+            return await _authorRepository.DeleteAsync(id)
+                ? Ok($"{this.Request.Scheme}://{this.Request.Host}{this.Request.Path}")
+                : Problem(statusCode: StatusCodes.Status500InternalServerError);
+        }
+        catch (Exception e)
+        {
+            return Problem(e.Message, statusCode: StatusCodes.Status500InternalServerError);
+        }
+    }
+
+    [HttpPut]
+    public async Task<IActionResult> UpdateAsync(AuthorForUpdateDto author)
+    {
+        if (!ModelState.IsValid)
+            return BadRequest(ModelState);
+
+        try
+        {
+            var updatedAuthorId = await _authorRepository.UpdateAsync(author);
+
+            return updatedAuthorId > 0
+                ? Ok(new { Uri = $"{this.Request.Scheme}://{this.Request.Host}{this.Request.Path}" + updatedAuthorId, Value = updatedAuthorId })
+                : Problem(statusCode: StatusCodes.Status500InternalServerError);
+        }
+        catch (Exception e)
+        {
+            return Problem(e.Message, statusCode: StatusCodes.Status500InternalServerError);
         }
     }
 }

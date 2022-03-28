@@ -1,9 +1,9 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿namespace TheBillboard.API.Options;
 
-namespace TheBillboard.API.Options
+using System.ComponentModel.DataAnnotations;
+
+public class ConnectionStringOptions
 {
-    public class ConnectionStringOptions
-    {
-        [Required] public string DefaultDatabase { get; set; } = null!;
-    }
+    [Required]
+    public string DefaultDatabase { get; set; } = null!;
 }

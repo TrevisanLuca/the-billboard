@@ -1,7 +1,4 @@
 ﻿namespace TheBillboard.MVC.Models;
-
-using System.ComponentModel.DataAnnotations;
-
 public record Message(int? Id = default,
                    string Title = "", 
                    string Body = "", 

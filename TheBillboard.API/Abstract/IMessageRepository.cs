@@ -1,6 +1,6 @@
 ﻿namespace TheBillboard.API.Abstract;
 
-using TheBillboard.API.Dtos;
+using Dtos;
 
 public interface IMessageRepository
 {

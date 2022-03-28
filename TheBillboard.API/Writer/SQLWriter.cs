@@ -1,31 +1,29 @@
-﻿using Dapper;
+﻿namespace TheBillboard.API.Writer;
+
+using Dapper;
 using Microsoft.Extensions.Options;
-using System.Data;
 using System.Data.SqlClient;
-using TheBillboard.API.Abstract;
-using TheBillboard.API.Domain;
-using TheBillboard.API.Options;
+using Abstract;
+using Domain;
+using Options;
 
-namespace TheBillboard.API.Writer
+public class SQLWriter : IWriter
 {
-    public class SQLWriter : IWriter
+    private readonly string _connectionstring;
+    public SQLWriter(IOptions<ConnectionStringOptions> options) => _connectionstring = options.Value.DefaultDatabase;
+
+    public async Task<int?> WriteInDBAsync<TDto>(string query, TDto objectToWrite) where TDto : DomainBase =>
+        (await new SqlConnection(_connectionstring).ExecuteScalarAsync(query, objectToWrite, commandTimeout: 10)) as int?;
+
+    public async Task<int> DeleteInDBAsync(string query, object parameters)
     {
-        private readonly string _connectionstring;
-        public SQLWriter(IOptions<ConnectionStringOptions> options) => _connectionstring = options.Value.DefaultDatabase;
-
-        public async Task<int?> WriteInDBAsync<TDto>(string query, TDto objectToWrite) where TDto : DomainBase =>
-            (await new SqlConnection(_connectionstring).ExecuteScalarAsync(query, objectToWrite, commandTimeout: 10)) as int?;
-
-        public async Task<int> DeleteInDBAsync(string query, object parameters)
+        try
         {
-            try
-            {
-                return await new SqlConnection(_connectionstring).ExecuteAsync(query, parameters);
-            }
-            catch (Exception)
-            {
-                return 0;
-            }
+            return await new SqlConnection(_connectionstring).ExecuteAsync(query, parameters);
+        }
+        catch (Exception)
+        {
+            return 0;
         }
     }
 }

@@ -3,7 +3,7 @@
 using Abstract;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
-using TheBillboard.API.Dtos;
+using Dtos;
 
 [ApiController]
 [Route("[controller]")]

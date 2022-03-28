@@ -4,7 +4,7 @@ using Abstract;
 using Domain;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using TheBillboard.API.Dtos;
+using Dtos;
 
 public class MessageRepository : IMessageRepository
 {
