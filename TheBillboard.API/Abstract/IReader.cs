@@ -1,4 +1,5 @@
 ﻿using System.Data;
+using TheBillboard.API.Domain;
 
 namespace TheBillboard.API.Abstract
 {

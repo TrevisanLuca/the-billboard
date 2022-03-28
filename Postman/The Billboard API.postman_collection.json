@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "4874c35c-c4d8-4430-aa21-2c5890e090f8",
+		"_postman_id": "b97f1906-4d34-4d56-9165-13943d969081",
 		"name": "The Billboard API",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -10,16 +10,69 @@
 			"item": [
 				{
 					"name": "GetById",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const response = pm.response;\r",
+									"const responseData = response.json();\r",
+									"const expectedSchema = {\r",
+									"    \"$schema\": \"http://json-schema.org/draft-07/schema\",\r",
+									"    \"type\": \"object\",\r",
+									"            \"additionalItems\": false,\r",
+									"            \"items\": {\r",
+									"                \"type\": \"object\",\r",
+									"                \"required\": [\r",
+									"                    \"id\",\r",
+									"                    \"title\",\r",
+									"                    \"body\",\r",
+									"                    \"createdAt\",\r",
+									"                    \"updatedAt\",\r",
+									"                ]\r",
+									"            },\r",
+									"            \"properties\": {\r",
+									"                \"id\" : {\"type\": \"integer\"},\r",
+									"                \"title\": {\"type\": \"string\"}, \r",
+									"                \"body\": {\"type\": \"string\"},\r",
+									"                \"createdAt\": {\"type\": \"string\"},\r",
+									"                \"updatedAt\": {\"type\": \"string\"},\r",
+									"                \"author\": {\r",
+									"                    \"type\": \"object\",\r",
+									"                    \"required\": [\r",
+									"                                    \"name\",\r",
+									"                                    \"surname\",                                    \r",
+									"                                    \"email\"\r",
+									"                                ],\r",
+									"                                \"properties\": {\r",
+									"                                    \"name\" : {\"type\": \"string\"},\r",
+									"                                    \"surname\": {\"type\": \"string\"}, \r",
+									"                                    \"email\": {\"type\": \"string\"},\r",
+									"                                }\r",
+									"                            }\r",
+									"            }\r",
+									"}   \r",
+									"\r",
+									"pm.test(\"Basic OK\", function(){\r",
+									"    response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test('Schema is valid', function() {\r",
+									"  pm.response.to.have.jsonSchema(expectedSchema);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
 					"request": {
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "https://localhost:7159/Message/1",
-							"protocol": "https",
+							"raw": "{{BaseURL}}/Message/1",
 							"host": [
-								"localhost"
+								"{{BaseURL}}"
 							],
-							"port": "7159",
 							"path": [
 								"Message",
 								"1"
@@ -47,39 +100,31 @@
 									"                    \"id\",\r",
 									"                    \"title\",\r",
 									"                    \"body\",\r",
-									"                    \"authorId\",\r",
 									"                    \"createdAt\",\r",
 									"                    \"updatedAt\",\r",
 									"                ]\r",
 									"            },\r",
 									"            \"properties\": {\r",
-									"                \"id\" : {\r",
-									"                    \"type\": \"integer\"\r",
-									"                },\r",
-									"                \"title\": {\r",
-									"                    \"type\": \"integer\"\r",
-									"                }, \r",
+									"                \"id\" : {\"type\": \"integer\"},\r",
+									"                \"title\": {\"type\": \"string\"}, \r",
+									"                \"body\": {\"type\": \"string\"},\r",
+									"                \"createdAt\": {\"type\": \"string\"},\r",
+									"                \"updatedAt\": {\"type\": \"string\"},\r",
 									"                \"author\": {\r",
 									"                    \"type\": \"object\",\r",
 									"                    \"required\": [\r",
-									"                                    \"id\",\r",
-									"                                    \"surname\",\r",
 									"                                    \"name\",\r",
-									"                                    \"email\",\r",
-									"                                    \"createdAt\",\r",
-									"                                    \"updatedAt\"\r",
+									"                                    \"surname\",                                    \r",
+									"                                    \"email\"\r",
 									"                                ],\r",
 									"                                \"properties\": {\r",
-									"                                    \"id\": {\r",
-									"                                        \"type\": \"integer\"\r",
-									"                                    },\r",
-									"                                    \"surname\": {\r",
-									"                                        \"type\": \"integer\"\r",
-									"                                    }\r",
+									"                                    \"name\" : {\"type\": \"string\"},\r",
+									"                                    \"surname\": {\"type\": \"string\"}, \r",
+									"                                    \"email\": {\"type\": \"string\"},\r",
 									"                                }\r",
 									"                            }\r",
 									"            }\r",
-									"}  \r",
+									"}   \r",
 									"            \r",
 									"\r",
 									"pm.test(\"Basic OK\", function(){\r",
@@ -98,12 +143,10 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "https://localhost:7159/Message",
-							"protocol": "https",
+							"raw": "{{BaseURL}}/Message",
 							"host": [
-								"localhost"
+								"{{BaseURL}}"
 							],
-							"port": "7159",
 							"path": [
 								"Message"
 							]
@@ -113,6 +156,60 @@
 				},
 				{
 					"name": "Create",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const response = pm.response;\r",
+									"pm.test(\"Basic OK\", function(){\r",
+									"    response.to.have.status(201);\r",
+									"});\r",
+									"console.log(response);\r",
+									"const message = \r",
+									"{\r",
+									"    \"title\": \"MessageToCreateTitle\",\r",
+									"    \"body\": \"MessageToCreateBody\",\r",
+									"    \"authorId\": 1\r",
+									"};\r",
+									"\r",
+									"const jsonResponse=response.json();\r",
+									"console.log(\"Response JSON: \"+ JSON.stringify(jsonResponse));\r",
+									"const callOptions = {\r",
+									"    url: pm.environment.get('BaseURL') + '/Message/' + jsonResponse,\r",
+									"    method: 'GET',\r",
+									"    header: {\r",
+									"        'Content-Type': 'application/json'\r",
+									"    },\r",
+									"body: {\r",
+									"        mode: 'raw',\r",
+									"        raw: JSON.stringify(message)\r",
+									"    }\r",
+									"}\r",
+									"pm.sendRequest(callOptions, function (err, response1) {\r",
+									"    \r",
+									"    console.log(response1);\r",
+									"\r",
+									"    if(err != null){\r",
+									"        console.log(\"An error occured while creating the Message. Error: \" + err.json)\r",
+									"        return;\r",
+									"    }    \r",
+									"        const jsonResponse2=response1.json();\r",
+									"\r",
+									"        console.log(\"Response JSON: \"+ JSON.stringify(jsonResponse2));\r",
+									"\r",
+									"        pm.test(\"Creation success\", function(){\r",
+									"            pm.expect(jsonResponse2.title).to.eql(message.title);\r",
+									"            pm.expect(jsonResponse2.body).to.eql(message.body);\r",
+									"            //pm.expect(jsonResponse2.authorId).to.eql(message.authorId);\r",
+									"        });\r",
+									"\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
 					"request": {
 						"method": "POST",
 						"header": [
@@ -124,15 +221,13 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"title\": \"Hello\",\r\n    \"body\": \"Hello World!\",\r\n    \"authorId\": 1\r\n}"
+							"raw": "{\r\n    \"title\": \"MessageToCreateTitle\",\r\n    \"body\": \"MessageToCreateBody\",\r\n    \"authorId\": 1\r\n}"
 						},
 						"url": {
-							"raw": "https://localhost:7159/Message",
-							"protocol": "https",
+							"raw": "{{BaseURL}}/Message",
 							"host": [
-								"localhost"
+								"{{BaseURL}}"
 							],
-							"port": "7159",
 							"path": [
 								"Message"
 							]
@@ -171,14 +266,14 @@
 									"    console.log(response)\r",
 									"\r",
 									"    if(err != null){\r",
-									"        console.log(\"An error occured retrieving Jakala Old SSO Token. Error: \" + err.json)\r",
+									"        console.log(\"An error occured while deleting the Author. Error: \" + err.json)\r",
 									"        return;\r",
 									"    }\r",
 									"    \r",
 									"    const jsonResponse=response.json();\r",
 									"    console.log(\"Response JSON: \"+ JSON.stringify(jsonResponse));\r",
 									"\r",
-									"    pm.environment.set('MessageID', jsonResponse.id)\r",
+									"    pm.environment.set('MessageID', jsonResponse)\r",
 									"});"
 								],
 								"type": "text/javascript"
@@ -188,6 +283,7 @@
 							"listen": "test",
 							"script": {
 								"exec": [
+									"const response = pm.response;\r",
 									"pm.test(\"Basic OK\", function(){\r",
 									"    response.to.have.status(200);\r",
 									"});"
@@ -218,6 +314,126 @@
 						}
 					},
 					"response": []
+				},
+				{
+					"name": "Update",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const message = \r",
+									"{\r",
+									"    \"title\": \"MessageToUpdateTitle\",\r",
+									"    \"body\": \"MessageToUpdateBody\",\r",
+									"    \"authorId\": 1\r",
+									"};\r",
+									"\r",
+									"const callOptions = {\r",
+									"    url: pm.environment.get('BaseURL') + '/Message',\r",
+									"    method: 'POST',\r",
+									"    header: {\r",
+									"        'Content-Type': 'application/json'\r",
+									"    },\r",
+									"body: {\r",
+									"        mode: 'raw',\r",
+									"        raw: JSON.stringify(message)\r",
+									"    }\r",
+									"}\r",
+									"\r",
+									"pm.sendRequest(callOptions, function (err, response) {\r",
+									"    \r",
+									"    console.log(response);\r",
+									"\r",
+									"    if(err != null){\r",
+									"        console.log(\"An error occured while creating the Author. Error: \" + err.json)\r",
+									"        return;\r",
+									"    }    \r",
+									"        const jsonResponse=response.json();\r",
+									"\r",
+									"        console.log(\"Response JSON: \"+ JSON.stringify(jsonResponse));\r",
+									"        pm.environment.set('MessageID', jsonResponse)\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const response = pm.response;\r",
+									"pm.test(\"Basic OK\", function(){\r",
+									"    response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"const message = \r",
+									"{\r",
+									"    \"title\": \"UpdatedMessageTitle\",\r",
+									"    \"body\": \"UpdatedMessageBody\"\r",
+									"};\r",
+									"\r",
+									"const jsonResponse=response.json();\r",
+									"console.log(jsonResponse);\r",
+									"\r",
+									"const callOptions = {\r",
+									"    url: pm.environment.get('BaseURL') + '/Message/' + jsonResponse.value,\r",
+									"    method: 'GET',\r",
+									"    header: {\r",
+									"        'Content-Type': 'application/json'\r",
+									"    },\r",
+									"body: {\r",
+									"        mode: 'raw',\r",
+									"        raw: JSON.stringify(message)\r",
+									"    }\r",
+									"}\r",
+									"pm.sendRequest(callOptions, function (err, response) {\r",
+									"    \r",
+									"    console.log(response);\r",
+									"\r",
+									"    if(err != null){\r",
+									"        console.log(\"An error occured while updating the Message. Error: \" + err.json)\r",
+									"        return;\r",
+									"    }    \r",
+									"        const jsonResponse=response.json();\r",
+									"\r",
+									"        console.log(\"Response JSON: \"+ JSON.stringify(jsonResponse));\r",
+									"\r",
+									"        pm.test(\"Creation success\", function(){\r",
+									"            pm.expect(jsonResponse.title).to.eql(message.title);\r",
+									"            pm.expect(jsonResponse.body).to.eql(message.body);\r",
+									"            //pm.expect(jsonResponse.email).to.eql(message.email);\r",
+									"        });\r",
+									"\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"id\": {{MessageID}},\r\n  \"title\": \"UpdatedMessageTitle\",\r\n  \"body\": \"UpdatedMessageBody\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BaseURL}}/Message",
+							"host": [
+								"{{BaseURL}}"
+							],
+							"path": [
+								"Message"
+							]
+						}
+					},
+					"response": []
 				}
 			]
 		},
@@ -226,16 +442,54 @@
 			"item": [
 				{
 					"name": "GetById",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const response = pm.response;\r",
+									"const responseData = response.json();\r",
+									"const expectedSchema = {\r",
+									"    \"$schema\": \"http://json-schema.org/draft-07/schema\",\r",
+									"    \"type\": \"object\",\r",
+									"            \"additionalItems\": false,\r",
+									"            \"items\": {\r",
+									"                \"type\": \"object\",\r",
+									"                \"required\": [\r",
+									"                    \"id\",\r",
+									"                    \"name\",\r",
+									"                    \"surname\",\r",
+									"                    \"email\"\r",
+									"                ]\r",
+									"            },\r",
+									"            \"properties\": {\r",
+									"                \"id\" : { \"type\": \"integer\" },\r",
+									"                \"title\": { \"type\": \"string\" },\r",
+									"                \"surname\" : { \"type\": \"string\" },\r",
+									"                \"email\" : { \"type\": \"string\" }\r",
+									"            }\r",
+									"}  \r",
+									"\r",
+									"pm.test(\"Basic OK\", function(){\r",
+									"    response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test('Schema is valid', function() {\r",
+									"  pm.response.to.have.jsonSchema(expectedSchema);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
 					"request": {
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "https://localhost:7159/Author/1",
-							"protocol": "https",
+							"raw": "{{BaseURL}}/Author/1",
 							"host": [
-								"localhost"
+								"{{BaseURL}}"
 							],
-							"port": "7159",
 							"path": [
 								"Author",
 								"1"
@@ -246,18 +500,357 @@
 				},
 				{
 					"name": "GetAll",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const response = pm.response;\r",
+									"const responseData = response.json();\r",
+									"const expectedSchema = {\r",
+									"    \"$schema\": \"http://json-schema.org/draft-07/schema\",\r",
+									"    \"type\": \"array\",\r",
+									"            \"additionalItems\": false,\r",
+									"            \"items\": {\r",
+									"                \"type\": \"object\",\r",
+									"                \"required\": [\r",
+									"                    \"id\",\r",
+									"                    \"name\",\r",
+									"                    \"surname\",\r",
+									"                    \"email\"\r",
+									"                ]\r",
+									"            },\r",
+									"            \"properties\": {\r",
+									"                \"id\" : { \"type\": \"integer\" },\r",
+									"                \"title\": { \"type\": \"string\" },\r",
+									"                \"surname\" : { \"type\": \"string\" },\r",
+									"                \"email\" : { \"type\": \"string\" }\r",
+									"            }\r",
+									"}  \r",
+									"\r",
+									"pm.test(\"Basic OK\", function(){\r",
+									"    response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test('Schema is valid', function() {\r",
+									"  pm.response.to.have.jsonSchema(expectedSchema);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
 					"request": {
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "https://localhost:7159/Author",
-							"protocol": "https",
+							"raw": "{{BaseURL}}/Author",
 							"host": [
-								"localhost"
+								"{{BaseURL}}"
 							],
-							"port": "7159",
 							"path": [
 								"Author"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const message = \r",
+									"{\r",
+									"    \"name\": \"AuthorToDeleteName\",\r",
+									"    \"surname\": \"AuthorToDeleteSurname\",\r",
+									"    \"email\": \"AuthorToDelete@Email.com\"\r",
+									"};\r",
+									"\r",
+									"const callOptions = {\r",
+									"    url: pm.environment.get('BaseURL') + '/Author',\r",
+									"    method: 'POST',\r",
+									"    header: {\r",
+									"        'Content-Type': 'application/json'\r",
+									"    },\r",
+									"body: {\r",
+									"        mode: 'raw',\r",
+									"        raw: JSON.stringify(message)\r",
+									"    }\r",
+									"}\r",
+									"\r",
+									"pm.sendRequest(callOptions, function (err, response) {\r",
+									"    \r",
+									"    console.log(response);\r",
+									"\r",
+									"    if(err != null){\r",
+									"        console.log(\"An error occured while deleting the Author. Error: \" + err.json)\r",
+									"        return;\r",
+									"    }    \r",
+									"        const jsonResponse=response.json();\r",
+									"\r",
+									"        console.log(\"Response JSON: \"+ JSON.stringify(jsonResponse));\r",
+									"\r",
+									"pm.environment.set('AuthorID', jsonResponse)\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const response = pm.response;\r",
+									"pm.test(\"Basic OK\", function(){\r",
+									"    response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"const callOptions = {\r",
+									"    url: pm.environment.get('BaseURL') + '/Author/' + pm.environment.get(\"AuthorID\"),\r",
+									"    method: 'GET',\r",
+									"    header: {\r",
+									"        'Content-Type': 'application/json'\r",
+									"    }\r",
+									"}\r",
+									"\r",
+									"pm.sendRequest(callOptions, function (err, response) {\r",
+									"    \r",
+									"    console.log(response);\r",
+									"\r",
+									"    if(err != null){\r",
+									"        console.log(\"An error occured while deleting the Author. Error: \" + err.json)\r",
+									"        return;\r",
+									"    }    \r",
+									"        const jsonResponse=response1.json();\r",
+									"\r",
+									"        console.log(\"Response JSON: \"+ JSON.stringify(jsonResponse));\r",
+									"\r",
+									"        pm.test(\"Deletion successful\", function(){\r",
+									"            response.code === 404;\r",
+									"        });\r",
+									"\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{BaseURL}}/Author/{{AuthorID}}",
+							"host": [
+								"{{BaseURL}}"
+							],
+							"path": [
+								"Author",
+								"{{AuthorID}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const response = pm.response;\r",
+									"pm.test(\"Basic OK\", function(){\r",
+									"    response.to.have.status(201);\r",
+									"});\r",
+									"\r",
+									"const message = \r",
+									"{\r",
+									"    \"name\": \"AuthorToCreateName\",\r",
+									"    \"surname\": \"AuthorToCreateSurname\",\r",
+									"    \"email\": \"AuthorToCreate@email.com\"\r",
+									"};\r",
+									"\r",
+									"const jsonResponse=response.json();\r",
+									"console.log(\"Response JSON: \"+ JSON.stringify(jsonResponse));\r",
+									"const callOptions = {\r",
+									"    url: pm.environment.get('BaseURL') + '/Author/' + jsonResponse,\r",
+									"    method: 'GET',\r",
+									"    header: {\r",
+									"        'Content-Type': 'application/json'\r",
+									"    },\r",
+									"body: {\r",
+									"        mode: 'raw',\r",
+									"        raw: JSON.stringify(message)\r",
+									"    }\r",
+									"}\r",
+									"pm.sendRequest(callOptions, function (err, response) {\r",
+									"    \r",
+									"    console.log(response);\r",
+									"\r",
+									"    if(err != null){\r",
+									"        console.log(\"An error occured while creating the Author. Error: \" + err.json)\r",
+									"        return;\r",
+									"    }    \r",
+									"        const jsonResponse=response.json();\r",
+									"\r",
+									"        console.log(\"Response JSON: \"+ JSON.stringify(jsonResponse));\r",
+									"\r",
+									"        pm.test(\"Creation success\", function(){\r",
+									"            pm.expect(jsonResponse.name).to.eql(message.name);\r",
+									"            pm.expect(jsonResponse.surname).to.eql(message.surname);\r",
+									"            pm.expect(jsonResponse.email).to.eql(message.email);\r",
+									"        });\r",
+									"\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"AuthorToCreateName\",\r\n    \"surname\": \"AuthorToCreateSurname\",\r\n    \"email\": \"AuthorToCreate@email.com\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BaseURL}}/Author",
+							"host": [
+								"{{BaseURL}}"
+							],
+							"path": [
+								"Author"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const message = \r",
+									"{\r",
+									"    \"name\": \"AuthorToUpdateName\",\r",
+									"    \"surname\": \"AuthorToUpdateSurname\",\r",
+									"    \"email\": \"AuthorToUpdate@Email.com\"\r",
+									"};\r",
+									"\r",
+									"const callOptions = {\r",
+									"    url: pm.environment.get('BaseURL') + '/Author',\r",
+									"    method: 'POST',\r",
+									"    header: {\r",
+									"        'Content-Type': 'application/json'\r",
+									"    },\r",
+									"body: {\r",
+									"        mode: 'raw',\r",
+									"        raw: JSON.stringify(message)\r",
+									"    }\r",
+									"}\r",
+									"\r",
+									"pm.sendRequest(callOptions, function (err, response) {\r",
+									"    \r",
+									"    //console.log(response);\r",
+									"\r",
+									"    if(err != null){\r",
+									"        console.log(\"An error occured while creating the Author. Error: \" + err.json)\r",
+									"        return;\r",
+									"    }    \r",
+									"        const jsonResponse=response.json();\r",
+									"\r",
+									"        //console.log(\"Response JSON: \"+ JSON.stringify(jsonResponse));\r",
+									"        pm.environment.set('AuthorID', jsonResponse)\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const response = pm.response;\r",
+									"pm.test(\"Basic OK\", function(){\r",
+									"    response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"const message = \r",
+									"{\r",
+									"    \"name\": \"AuthorUpdatedName\",\r",
+									"    \"surname\": \"AuthorUpdatedSurname\",\r",
+									"    \"email\": \"AuthorUpdated@email.com\"\r",
+									"};\r",
+									"\r",
+									"const jsonResponse=response.json();\r",
+									"console.log(jsonResponse);\r",
+									"\r",
+									"const callOptions = {\r",
+									"    url: pm.environment.get('BaseURL') + '/Author/' + jsonResponse.value,\r",
+									"    method: 'GET',\r",
+									"    header: {\r",
+									"        'Content-Type': 'application/json'\r",
+									"    },\r",
+									"body: {\r",
+									"        mode: 'raw',\r",
+									"        raw: JSON.stringify(message)\r",
+									"    }\r",
+									"}\r",
+									"pm.sendRequest(callOptions, function (err, response) {\r",
+									"    \r",
+									"    console.log(response);\r",
+									"\r",
+									"    if(err != null){\r",
+									"        console.log(\"An error occured while updating the Author. Error: \" + err.json)\r",
+									"        return;\r",
+									"    }    \r",
+									"        const jsonResponse=response.json();\r",
+									"\r",
+									"        console.log(\"Response JSON: \"+ JSON.stringify(jsonResponse));\r",
+									"\r",
+									"        pm.test(\"Creation success\", function(){\r",
+									"            pm.expect(jsonResponse.name).to.eql(message.name);\r",
+									"            pm.expect(jsonResponse.surname).to.eql(message.surname);\r",
+									"            pm.expect(jsonResponse.email).to.eql(message.email);\r",
+									"        });\r",
+									"\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"id\" : {{AuthorID}},\r\n    \"name\": \"AuthorUpdatedName\",\r\n    \"surname\": \"AuthorUpdatedSurname\",\r\n    \"email\": \"AuthorUpdated@email.com\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BaseURL}}/Author/",
+							"host": [
+								"{{BaseURL}}"
+							],
+							"path": [
+								"Author",
+								""
 							]
 						}
 					},
