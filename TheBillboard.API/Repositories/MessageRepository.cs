@@ -45,6 +45,7 @@ public class MessageRepository : IMessageRepository
                                            ,[CreatedAt]
                                            ,[UpdatedAt]
                                            ,[AuthorId])
+                                     OUTPUT inserted.[Id]
                                      VALUES
                                            (@Title
                                            ,@Body
@@ -62,13 +63,11 @@ public class MessageRepository : IMessageRepository
         const string query = @"UPDATE [dbo].[Message]
                                   SET [Title] = @Title
                                      ,[Body] = @Body
-                                     ,[CreatedAt] = @CreatedAt
                                      ,[UpdatedAt] = @UpdatedAt
-                                     ,[AuthorId] = @AuthorId
                                OUTPUT inserted.[Id]
                                 WHERE Id=@Id";
 
-        var messageForQuery = new Message(message.Id, message.Title, message.Body, DateTime.Now, DateTime.Now, message.AuthorId);
+        var messageForQuery = new Message(message.Id, message.Title, message.Body, default, DateTime.Now, 0);
 
         return await _writer.WriteInDB(query, messageForQuery);
     }

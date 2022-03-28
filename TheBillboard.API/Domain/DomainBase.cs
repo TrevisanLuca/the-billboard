@@ -1,4 +1,4 @@
 ﻿namespace TheBillboard.API.Domain
 {
-    public abstract record DomainBase(int id, DateTime? CreatedAt, DateTime? UpdatedAt);
+    public abstract record DomainBase(int Id, DateTime? CreatedAt, DateTime? UpdatedAt);
 }

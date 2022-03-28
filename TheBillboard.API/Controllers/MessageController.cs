@@ -72,9 +72,7 @@ public class MessageController : ControllerBase
 
             return deletedMessageId > 0
                 ? Ok($"{this.Request.Scheme}://{this.Request.Host}{this.Request.Path}")
-                : deletedMessageId == 0
-                    ? Problem("Message wasn't found", statusCode: StatusCodes.Status500InternalServerError)
-                    : Problem("Message is in use", statusCode: StatusCodes.Status500InternalServerError);
+                : Problem("Message wasn't found", statusCode: StatusCodes.Status500InternalServerError);
         }
         catch (Exception e)
         {
