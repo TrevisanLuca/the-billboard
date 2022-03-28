@@ -66,10 +66,8 @@ public class MessageController : ControllerBase
             return NotFound();
 
         try
-        {
-            var deletedMessageId = await _messageRepository.DeleteAsync(id);
-
-            return deletedMessageId > 0
+        {           
+            return await _messageRepository.DeleteAsync(id)
                 ? Ok($"{this.Request.Scheme}://{this.Request.Host}{this.Request.Path}")
                 : Problem(statusCode: StatusCodes.Status500InternalServerError);
         }

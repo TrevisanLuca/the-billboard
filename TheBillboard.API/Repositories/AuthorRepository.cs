@@ -47,7 +47,7 @@ namespace TheBillboard.API.Repositories
                                           @CreatedAt, 
                                           @UpdatedAt)";
             var authorForQuery = new Author(default, author.Name, author.Surname, author.Email, DateTime.Now, DateTime.Now);
-            return await _writer.WriteInDB(query, authorForQuery);
+            return await _writer.WriteInDBAsync(query, authorForQuery);
         }
         public async Task<int?> UpdateAsync(AuthorForUpdateDto author)
         {
@@ -56,13 +56,13 @@ namespace TheBillboard.API.Repositories
                                    OUTPUT inserted.[Id] 
                                    WHERE Id = @Id";
             var authorForQuery = new Author(author.id, author.Name, author.Surname, author.Email, default, DateTime.Now);
-            return await _writer.WriteInDB(query, authorForQuery);
+            return await _writer.WriteInDBAsync(query, authorForQuery);
         }
-        public async Task<int> DeleteAsync(int id)
+        public async Task<bool> DeleteAsync(int id)
         {
             const string query = @"DELETE FROM Author
                                    WHERE Id = @Id";
-            return await _writer.DeleteInDB(query, new { Id = id });
+            return await _writer.DeleteInDBAsync(query, new { Id = id }) > 0;
         }
     }
 }

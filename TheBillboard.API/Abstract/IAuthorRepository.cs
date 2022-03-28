@@ -8,7 +8,7 @@ namespace TheBillboard.API.Abstract
         IAsyncEnumerable<SimpleAuthorDto> GetAllAsync();
         Task<SimpleAuthorDto?> GetByIdAsync(int id);
         Task<int?> CreateAsync(AuthorForCreateDto author);
-        Task<int> DeleteAsync(int id);
+        Task<bool> DeleteAsync(int id);
         Task<int?> UpdateAsync(AuthorForUpdateDto author);
     }
 }

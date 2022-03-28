@@ -65,10 +65,8 @@ namespace TheBillboard.API.Controllers
                 return NotFound();
 
             try
-            {
-                var affectedRows = await _authorRepository.DeleteAsync(id);
-
-                return affectedRows > 0
+            {              
+                return await _authorRepository.DeleteAsync(id)
                     ? Ok($"{this.Request.Scheme}://{this.Request.Host}{this.Request.Path}")
                     : Problem(statusCode: StatusCodes.Status500InternalServerError);
             }

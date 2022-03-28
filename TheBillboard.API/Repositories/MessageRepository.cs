@@ -55,7 +55,7 @@ public class MessageRepository : IMessageRepository
 
         var messageForQuery = new Message(default, message.Title, message.Body, DateTime.Now, DateTime.Now, message.AuthorId);
 
-        return await _writer.WriteInDB(query, messageForQuery);
+        return await _writer.WriteInDBAsync(query, messageForQuery);
     }
 
     public async Task<int?> UpdateAsync(MessageForUpdateDto message)
@@ -69,13 +69,13 @@ public class MessageRepository : IMessageRepository
 
         var messageForQuery = new Message(message.Id, message.Title, message.Body, default, DateTime.Now, default);
 
-        return await _writer.WriteInDB(query, messageForQuery);
+        return await _writer.WriteInDBAsync(query, messageForQuery);
     }
 
-    public async Task<int> DeleteAsync(int id)
+    public async Task<bool> DeleteAsync(int id)
     {
         const string query = @"DELETE FROM Message
                                    WHERE Id = @Id";
-        return await _writer.DeleteInDB(query, new { Id = id });
+        return await _writer.DeleteInDBAsync(query, new { Id = id }) > 0;
     }
 }
